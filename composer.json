@@ -1,0 +1,22 @@
+{
+	"name": "milo/github-api",
+	"type": "library",
+	"description": "Easy-to-use Github API client",
+	"license": ["MIT"],
+	"authors": [
+		{
+			"name": "Miloslav Hůla",
+			"email": "miloslav.hula@gmail.com",
+			"homepage": "https://github.com/milo"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0"
+	},
+	"require-dev": {
+		"nette/tester": "~1.1.0"
+	},
+	"autoload": {
+		"classmap": ["src/Github/"]
+	}
+}
