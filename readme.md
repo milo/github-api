@@ -1,15 +1,14 @@
-Github API Client
-=================
-This library helps to work with [Github API](https://developer.github.com/v3/). An implemented [HTTP client](https://github.com/milo/github-api/blob/master/src/Github/Http/Client.php) works with `cURL` or `stream_get_contents()`.
+[Github API](https://developer.github.com/v3/) easy access library. Works with cURL, stream or any of your HTTP client.
 
-Todo:
-- cURL
-- FileCache
+Todo
+----
+- HTTP\CurlClient
+- pagination helpers
 
 
 Quick Start
 ===========
-A following short example makes request for list of emojis used on Github.
+List all emojis used on Github.
 ```php
 use Milo\Github;
 
@@ -17,64 +16,60 @@ $api = new Github\Api;
 $response = $api->get('/emojis');
 $emojis = $api->decode($response);
 
-var_dump($emojis);
+print_r($emojis);
+/*
+stdClass Object
+(
+    [+1] => https://github.global.ssl.fastly.net/images/icons/emoji/+1.png?v5
+    [-1] => https://github.global.ssl.fastly.net/images/icons/emoji/-1.png?v5
+    [100] => https://github.global.ssl.fastly.net/images/icons/emoji/100.png?v5
+    [1234] => https://github.global.ssl.fastly.net/images/icons/emoji/1234.png?v5
+    [8ball] => https://github.global.ssl.fastly.net/images/icons/emoji/8ball.png?v5
+    [a] => https://github.global.ssl.fastly.net/images/icons/emoji/a.png?v5
+    ...
+)
+*/
 ```
 
 
-Obtaining OAuth token
-=====================
-For many requests you need an authorization. Class [Milo\Github\OAuth\Login](https://github.com/milo/github-api/blob/master/src/Github/OAuth/Login.php) helps you to obtain an OAuth token.
+OAuth token
+===========
+You need an authorization for many request. [Milo\Github\OAuth\Login](https://github.com/milo/github-api/blob/master/src/Github/OAuth/Login.php) helps you to obtain an OAuth token. The workflow is described in [Github API documentation](https://developer.github.com/v3/oauth/)
 
-The workflow is described in [Github API documentation](https://developer.github.com/v3/oauth/). In short:
-- you redirect user to Github web page with authorization request
-- after agree-click, he/she will be redirected back to your application with temporary code in URL
-- you send a POST request to obtain a token
-- now you have a token
-
-So browser is redirected to Github web page and back. Login class needs to store some security information and session is needed.
-
-At first, you must register your application at Github web site (Account Settings -> Applications -> Developer applications). You obtain `$clientId` and `$clientSecret`. These you need to obtain the token.
+At first, register your application at Github web site (Account Settings -> Applications -> Developer applications). You obtain a `$clientId` and `$clientSecret`. These you need to obtain the token.
 ```php
 use Milo\Github;
 
 session_start();
 
-# Scopes for token
 $config = new Github\OAuth\Config($clientId, $clientSecret, ['user', 'repo']);
-
-# Default implementation of ISessionStorage
-$storage = new Github\Storages\SessionStorage;
-
+$storage = new Github\Storages\SessionStorage;  # default naive implementation
 $login = new Github\OAuth\Login($config, $storage);
+
+# Your application URL
+$appUrl = 'https://my.application.tld/index.php';
 
 # Token obtaining
 if ($login->hasToken()) {
 	$token = $login->getToken();
+
 } else {
-	if (!isset($_GET['back'])) {
-		# Following redirects to Github web page.
-		$login->askPermissions('https://application.example.com/index.php?back=1');
+	if (isset($_GET['back'])) {
+		$token = $login->obtainToken($_GET['code'], $_GET['state']);
+		header("Location: $appUrl");  # drop the 'code' and 'state' from URL
+		die();
 
 	} else {
-		$token = $login->obtainToken($_GET['code'], $_GET{'state'});
-
-		# maybe redirect here to drop the parameters from URL but it is up to you
+		# Performs redirect to Github page and die().
+		# Pass own redirection callback as 2nd argument if you need.
+		$login->askPermissions("$appUrl?back=1");
 	}
 ```
 
-Method `Login::askPermissions()` performs a redirection by `header("Location: $url")` by default. Your application may use an own mechanisms:
-```php
-$login->askPermissions('https://my.application.example/index.php?back=1', function($url) use ($myFramework) {
-	$myFramework->redirect($url);
-});
-```
-
-The token is stored by Login class. If you store it by your own, drop it explicitly.
+The token is stored by Login class in SessionStorage. Drop it if you need:
 ```php
 $login->dropToken();
 ```
-
-Check out the `Login::__construct()` for all optional parameters.
 
 
 Api access
@@ -84,14 +79,17 @@ Few examples are more then thousands words.
 use Milo\Github;
 
 $api = new Github\Api;
+
+# Not necessary for non-authorized access
 $api->setToken($token);
 
-$response = $api->get('/users/:user/repos', [  # Do you see the :user substring? That's I call substitution.
+# The :user substring I call a substitution.
+$response = $api->get('/users/:user/repos', [
 	'user' => 'milo',
 	'type' => 'owner'
 ]);
 
-# Same as above but without substitution.
+# Same as above but without the substitution.
 $response = $api->get('/users/milo/repos', [
 	'type' => 'owner'
 ]);
@@ -111,25 +109,22 @@ $gist = [
 ];
 $response = $api->post('/gists', $gists);
 
-# Which token scopes token has and which I need to access this API part?
+# Info about required scopes /user/followers service
 $response = $api->head('/user/followers');
 var_dump( $response->getHead('X-OAuth-Scopes') );           # Now I have.
 var_dump( $response->getHead('X-Accepted-OAuth-Scopes') );  # These I need.
 
 # Send own HTTP headers
-$response = $api->get('/repos/:owner/:repo/issues/comments', [
-	'owner' => 'nette',
-	'repo' => 'tracy',
-], [
+$response = $api->get('/repos/:owner/:repo/issues/comments', ['owner'=>'nette', 'repo'=>'tracy'], [
 	'Accept' => 'application/vnd.github.v3.full+json',
 ]);
 ```
 
-Do you need a lower level access? Check out the [Milo\Github\HTTP\Request](https://github.com/milo/github-api/blob/master/src/Github/Http/Request.php) at first.
+Lower level access possible by [Milo\Github\HTTP\Request](https://github.com/milo/github-api/blob/master/src/Github/Http/Request.php).
 ```php
 use Milo\Github;
 
-# Store this by imaginary Github API /cool/service?user=milo
+# Imaginary data for imaginary API service
 $data = ['one' => '1', 'two' => '3'];
 
 # Low-level
@@ -152,7 +147,8 @@ $request = $api->createRequest(
 
 # Low-low-low-level
 $request = new Github\Http\Request(
-	'PUT', 'https://api.github.com/cool/service?user=milo',
+	'PUT',
+	'https://api.github.com/cool/service?user=milo',
 	['Content-Type' => 'application/json'],
 	json_encode($data)
 );
@@ -161,7 +157,7 @@ $request = new Github\Http\Request(
 $response = $api->request($request);
 ```
 
-And what about response? Check out the [Milo\Github\HTTP\Response](https://github.com/milo/github-api/blob/master/src/Github/Http/Response.php).
+Check out the [Milo\Github\HTTP\Response](https://github.com/milo/github-api/blob/master/src/Github/Http/Response.php).
 ```php
 use Milo\Github;
 
@@ -176,7 +172,7 @@ $json = $response->getContent();
 $data = json_decode($json);
 
 
-# Or easily use Api::decode(). It checks many things for you.
+# Api::decode() checks many things for you.
 try {
 	$data = $api->decode($response, [200, 201]);
 } catch (Github\ApiException $e) {
@@ -186,18 +182,22 @@ try {
 
 HTTP client
 ===========
-This library contains HTTP client implementation [Milo\Github\Http\Client](https://github.com/milo/github-api/blob/master/src/Github/Http/Client.php). It uses `cURL` if available with `stream_get_contents()` fallback. If you have an own sweet one, implement the bridge with [Milo\Github\Http\IClient](https://github.com/milo/github-api/blob/master/src/Github/Http/IClient.php) interface.
+[cURL](https://github.com/milo/github-api/blob/master/src/Github/Http/CurlClient.php) and [stream](https://github.com/milo/github-api/blob/master/src/Github/Http/StreamClient.php) clients for your needs or implement the bridge with [Milo\Github\Http\IClient](https://github.com/milo/github-api/blob/master/src/Github/Http/IClient.php) interface.
 
-If you read the Github API documentation already, you noted the requests [rate limiting](https://developer.github.com/v3/#rate-limiting). This is a good reason to cache an HTTP requests:
+Rate limiting
+-------------
+[Rate limiting](https://developer.github.com/v3/#rate-limiting) limits amount of request in time. It is a good reason to cache requests:
 ```php
 use Milo\Github;
 
-$cache = new Github\Storages\FileCache(__DIR__ . '/temp');
-$client = new Github\Http\Client($cache);
+$cache = new Github\Storages\FileCache(__DIR__ . '/temp');  # default naive implementation
+$client = new Github\Http\CachedClient($cache);
+
 $api = new Github\Api($client);
 ```
 
-Sometimes is good to know what the HTTP client does.
+Debugging
+---------
 ```php
 $client = $api->getClient();
 
