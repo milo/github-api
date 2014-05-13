@@ -8,6 +8,14 @@ Todo
 - pagination helpers
 
 
+Installation
+============
+Download [release](https://github.com/milo/github-api/releases), decompress and include `github-api.php` manually, or use [Composer](https://getcomposer.org/):
+```
+composer require milo/github-api
+```
+
+
 Quick Start
 ===========
 List all emojis used on Github.
