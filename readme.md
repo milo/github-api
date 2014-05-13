@@ -1,5 +1,7 @@
 [Github API](https://developer.github.com/v3/) easy access library. Works with cURL, stream or any of your HTTP client.
 
+[![Build Status](https://travis-ci.org/milo/github-api.png?branch=master)](https://travis-ci.org/milo/github-api)
+
 Todo
 ----
 - HTTP\CurlClient
