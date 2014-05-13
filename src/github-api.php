@@ -8,6 +8,7 @@ require __DIR__ . '/Github/Storages/ICache.php';
 require __DIR__ . '/Github/Storages/ISessionStorage.php';
 require __DIR__ . '/Github/Http/IClient.php';
 
+require __DIR__ . '/Github/Storages/FileCache.php';
 require __DIR__ . '/Github/Storages/SessionStorage.php';
 
 require __DIR__ . '/Github/Http/Message.php';

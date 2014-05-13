@@ -131,6 +131,19 @@ namespace Milo\Github {
 }
 
 
+namespace Milo\Github\Http {
+	use Milo\Github;
+
+
+	/**
+	 * HTTP response is somehow wrong and cannot be processed.
+	 */
+	class BadResponseException extends Github\RuntimeException
+	{}
+
+}
+
+
 namespace Milo\Github\OAuth {
 	use Milo\Github;
 
@@ -143,14 +156,13 @@ namespace Milo\Github\OAuth {
 }
 
 
-namespace Milo\Github\Http {
+namespace Milo\Github\Storages {
 	use Milo\Github;
 
-
 	/**
-	 * HTTP response is somehow wrong and cannot be processed.
+	 * Directory is missing and/or cannot be created.
 	 */
-	class BadResponseException extends Github\RuntimeException
+	class MissingDirectoryException extends Github\RuntimeException
 	{}
 
 }
