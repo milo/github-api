@@ -11,40 +11,35 @@ use Milo\Github\Storages;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Client extends Github\Sanity implements IClient
+class StreamClient extends Github\Sanity implements IClient
 {
-	/** @var int[]  client will follow Location header on these response codes */
+	/** @var int[]  will follow Location header on these response codes */
 	public $redirectCodes = [
 		Response::S301_MOVED_PERMANENTLY,
 		Response::S302_FOUND,
 		Response::S307_TEMPORARY_REDIRECT,
 	];
 
-
-	/** @var int */
+	/** @var int  maximum redirects per request*/
 	public $maxRedirects = 5;
 
-	/** @var callable */
+	/** @var array|NULL */
+	private $sslOptions;
+
+	/** @var callable|NULL */
 	private $onRequest;
 
-	/** @var callable */
+	/** @var callable|NULL */
 	private $onResponse;
-
-	/** @var Storages\ICache|NULL */
-	private $cache;
-
-	/** @var array */
-	private $sslCheck;
 
 
 	/**
 	 * @param  Storages\ICache
-	 * @param  bool|string  TRUE = verify remote certificate, string = path to CA file/directory
+	 * @param  array  SSL context options {@link http://php.net/manual/en/context.ssl.php}
 	 */
-	public function __construct(Storages\ICache $cache = NULL, $sslCheck = FALSE)
+	public function __construct(array $sslOptions = NULL)
 	{
-		$this->cache = $cache;
-		$this->sslCheck = $sslCheck;
+		$this->sslOptions = $sslOptions;
 	}
 
 
@@ -62,43 +57,13 @@ class Client extends Github\Sanity implements IClient
 		$counter = $this->maxRedirects;
 		$previous = NULL;
 		do {
-			$cacheKey = $this->cacheKey(
-				$request->getMethod(),
-				$request->getUrl(),
-
-				/** @todo This should depend on Vary: header */
-				$request->getHeader('Accept'),
-				$request->getHeader('Accept-Encoding'),
-				$request->getHeader('Authorization')
-			);
-
-			if ($this->cache && ($cached = $this->cache->load($cacheKey))) {
-				/** @var $cached Response */
-				if ($cached->hasHeader('ETag')) {
-					$request->addHeader('If-None-Match', $cached->getHeader('ETag'));
-				} elseif ($cached->hasHeader('Last-Modified')) {
-					$request->addHeader('If-Modified-Since', $cached->getHeader('Last-Modified'));
-				}
-			}
-
 			$request->addHeader('Connection', 'close');
 
 			$this->onRequest && call_user_func($this->onRequest, $request);
-			$response = $this->streamRequest($request); /** @todo self::curlRequest */
+			$response = $this->streamRequest($request);
 			$this->onResponse && call_user_func($this->onResponse, $response);
 
-			if ($this->cache && $this->isCacheable($response)) {
-				$this->cache->save($cacheKey, clone $response);
-			}
-
-			if (isset($cached) && $response->getCode() === Response::S304_NOT_MODIFIED) {
-				/** @todo Would be responses somehow combined? */
-				$previous = $response;
-				$response = $cached;
-			}
-
-			$response->setPrevious($previous);
-			$previous = $response;
+			$previous = $response->setPrevious($previous);
 
 			if ($counter > 0 && in_array($response->getCode(), $this->redirectCodes) && $response->hasHeader('Location')) {
 				/** @todo Use the same HTTP $method for redirection? Set $content to NULL? */
@@ -170,11 +135,8 @@ class Client extends Github\Sanity implements IClient
 			$options['http']['content'] = $content;
 		}
 
-		if ($this->sslCheck) {
-			$options['ssl'] = ['verify_peer' => TRUE];
-			if (is_string($this->sslCheck)) {
-				$options['ssl'][is_dir($this->sslCheck) ? 'capath' : 'cafile'] = $this->sslCheck;
-			}
+		if ($this->sslOptions) {
+			$options['ssl'] = $this->sslOptions;
 		}
 
 		list($code, $headers, $content) = $this->fileGetContents($request->getUrl(), $options);
@@ -183,48 +145,12 @@ class Client extends Github\Sanity implements IClient
 
 
 	/**
-	 * @return Response
-	 *
-	 * @throws BadResponseException
-	 */
-	protected function curlRequest(Request $request)
-	{
-		/** @todo */
-	}
-
-
-	/**
-	 * @return bool
-	 */
-	protected function isCacheable(Response $response)
-	{
-		/** @todo Do it properly. Vary:, Pragma:, TTL...  */
-		if (!$response->isCode(200)) {
-			return FALSE;
-		} elseif (preg_match('#max-age=0|must-revalidate#i', $response->getHeader('Cache-Control', ''))) {
-			return FALSE;
-		}
-
-		return $response->hasHeader('ETag') || $response->hasHeader('Last-Modified');
-	}
-
-
-	/**
-	 * @param  string
-	 * @param  string...
-	 * @return string
-	 */
-	private function cacheKey($value /*, string ...$values*/)
-	{
-		return implode('.', func_get_args());
-	}
-
-
-	/**
 	 * @internal
 	 * @param  string
 	 * @param  array
 	 * @return array
+	 *
+	 * @throws BadResponseException
 	 */
 	protected function fileGetContents($url, array $contextOptions)
 	{
@@ -243,7 +169,7 @@ class Client extends Github\Sanity implements IClient
 		}
 
 		if (!isset($http_response_header[0]) || !preg_match('~^HTTP/1[.]. (\d{3})~i', $http_response_header[0], $m)) {
-			throw new BadResponseException('HTTP status code is missing.');
+			throw new BadResponseException('HTTP status code is missing.', 0, $e);
 		}
 		unset($http_response_header[0]);
 

@@ -8,7 +8,7 @@
 require __DIR__ . '/../../bootstrap.php';
 
 
-class TestClient extends Milo\Github\Http\Client
+class TestClient extends Milo\Github\Http\StreamClient
 {
 	/** @var callable */
 	public $onStreamRequest;

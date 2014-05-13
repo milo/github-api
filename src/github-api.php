@@ -13,7 +13,8 @@ require __DIR__ . '/Github/Storages/SessionStorage.php';
 require __DIR__ . '/Github/Http/Message.php';
 require __DIR__ . '/Github/Http/Request.php';
 require __DIR__ . '/Github/Http/Response.php';
-require __DIR__ . '/Github/Http/Client.php';
+require __DIR__ . '/Github/Http/CachedClient.php';
+require __DIR__ . '/Github/Http/StreamClient.php';
 
 require __DIR__ . '/Github/OAuth/Configuration.php';
 require __DIR__ . '/Github/OAuth/Token.php';

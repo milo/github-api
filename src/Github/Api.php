@@ -27,7 +27,7 @@ class Api extends Sanity
 
 	public function __construct(Http\IClient $client = NULL)
 	{
-		$this->client = $client ?: new Http\Client;
+		$this->client = $client ?: new Http\StreamClient;
 	}
 
 

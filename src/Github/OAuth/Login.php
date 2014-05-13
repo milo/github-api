@@ -34,12 +34,12 @@ class Login extends Github\Sanity
 	{
 		$this->conf = $conf;
 		$this->storage = $storage ?: new Storages\SessionStorage;
-		$this->client = $client ?: new Http\Client;
+		$this->client = $client ?: new Http\StreamClient;
 	}
 
 
 	/**
-	 * @return Http\Client
+	 * @return Http\IClient
 	 */
 	public function getClient()
 	{
