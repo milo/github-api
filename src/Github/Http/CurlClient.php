@@ -46,6 +46,7 @@ class CurlClient extends AbstractClient
 		$softOptions = [
 			CURLOPT_CONNECTTIMEOUT => 10,
 			CURLOPT_SSL_VERIFYHOST => 0,
+			CURLOPT_SSL_VERIFYPEER => 0,
 		];
 
 		$hardOptions = [
