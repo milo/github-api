@@ -78,4 +78,15 @@ class Helpers
 		return $value;
 	}
 
+
+	/**
+	 * @return Http\IClient
+	 */
+	public static function createDefaultClient()
+	{
+		return extension_loaded('curl')
+			? new Http\CurlClient
+			: new Http\StreamClient;
+	}
+
 }

@@ -34,7 +34,7 @@ class Login extends Github\Sanity
 	{
 		$this->conf = $conf;
 		$this->storage = $storage ?: new Storages\SessionStorage;
-		$this->client = $client ?: new Http\StreamClient;
+		$this->client = $client ?: Github\Helpers::createDefaultClient();
 	}
 
 

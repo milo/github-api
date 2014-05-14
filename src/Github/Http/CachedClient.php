@@ -23,7 +23,7 @@ class CachedClient extends Github\Sanity implements IClient
 	public function __construct(Storages\ICache $cache, IClient $client = NULL)
 	{
 		$this->cache = $cache;
-		$this->client = $client ?: new StreamClient;
+		$this->client = $client ?: Github\Helpers::createDefaultClient();
 	}
 
 
