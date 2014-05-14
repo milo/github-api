@@ -60,6 +60,10 @@ class CurlClient extends AbstractClient
 			CURLOPT_RETURNTRANSFER => TRUE,
 		];
 
+		if (($content = $request->getContent()) !== NULL) {
+			$hardOptions[CURLOPT_POSTFIELDS] = $content;
+		}
+
 		$curl = curl_init();
 		if ($curl === FALSE) {
 			throw new BadResponseException('Cannot init cURL handler.');
