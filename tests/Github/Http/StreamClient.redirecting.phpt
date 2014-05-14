@@ -11,11 +11,11 @@ require __DIR__ . '/../../bootstrap.php';
 class TestClient extends Milo\Github\Http\StreamClient
 {
 	/** @var callable */
-	public $onStreamRequest;
+	public $onProcess;
 
-	protected function streamRequest(Milo\Github\Http\Request $request)
+	protected function process(Milo\Github\Http\Request $request)
 	{
-		return call_user_func($this->onStreamRequest, $request);
+		return call_user_func($this->onProcess, $request);
 	}
 }
 
@@ -29,7 +29,7 @@ $responses = [
 	new Milo\Github\Http\Response(200, ['Location' => ''], ''),
 ];
 
-$client->onStreamRequest = function (Milo\Github\Http\Request $request) use (& $responses) {
+$client->onProcess = function (Milo\Github\Http\Request $request) use (& $responses) {
 	return array_shift($responses);
 };
 

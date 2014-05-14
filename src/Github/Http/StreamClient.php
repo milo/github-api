@@ -7,7 +7,7 @@ use Milo\Github\Storages;
 
 
 /**
- * HTTP client. If available, uses cURL. Native PHP stream with context otherwise.
+ * Client which use the file_get_contents() with a HTTP context options.
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
@@ -34,7 +34,6 @@ class StreamClient extends Github\Sanity implements IClient
 
 
 	/**
-	 * @param  Storages\ICache
 	 * @param  array  SSL context options {@link http://php.net/manual/en/context.ssl.php}
 	 */
 	public function __construct(array $sslOptions = NULL)
@@ -60,7 +59,7 @@ class StreamClient extends Github\Sanity implements IClient
 			$request->addHeader('Connection', 'close');
 
 			$this->onRequest && call_user_func($this->onRequest, $request);
-			$response = $this->streamRequest($request);
+			$response = $this->process($request);
 			$this->onResponse && call_user_func($this->onResponse, $response);
 
 			$previous = $response->setPrevious($previous);
@@ -112,7 +111,7 @@ class StreamClient extends Github\Sanity implements IClient
 	 *
 	 * @throws BadResponseException
 	 */
-	protected function streamRequest(Request $request)
+	protected function process(Request $request)
 	{
 		$headerStr = [];
 		foreach ($request->getHeaders() as $name => $value) {
