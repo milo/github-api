@@ -1,7 +1,7 @@
 {
 	"name": "milo/github-api",
 	"type": "library",
-	"description": "Easy-to-use Github API client",
+	"description": "Github API easy access",
 	"license": ["MIT"],
 	"authors": [
 		{
@@ -15,6 +15,9 @@
 	},
 	"require-dev": {
 		"nette/tester": "~1.1.0"
+	},
+	"suggest": {
+		"ext-curl": "Allows you to use Http\\CurlClient"
 	},
 	"autoload": {
 		"classmap": ["src/Github/"]
