@@ -20,29 +20,7 @@ class TestClient extends Milo\Github\Http\StreamClient
 }
 
 
-# onRequest(), onResponse()
-test(function() {
-	$client = new TestClient;
-	$client->onFileGetContents = function() { return [200, [], '{response}']; };
-
-	$onRequest = NULL;
-	$client->onRequest(function(Milo\Github\Http\Request $request) use (& $onRequest) {
-		$onRequest = $request->getContent();
-	});
-
-	$onResponse = NULL;
-	$client->onResponse(function(Milo\Github\Http\Response $response) use (& $onResponse) {
-		$onResponse = $response->getContent();
-	});
-
-	$client->request(new Milo\Github\Http\Request('', '', [], '{request}'));
-
-	Assert::same('{request}', $onRequest);
-	Assert::same('{response}', $onResponse);
-});
-
-
-# common
+# Common
 test(function() {
 	$client = new TestClient;
 	$client->onFileGetContents = function($url, array $contextOptions) {
@@ -50,7 +28,7 @@ test(function() {
 		Assert::same([
 			'http' => [
 				'method' => 'METHOD',
-				'header' => "custom: header\r\nconnection: close\r\n",
+				'header' => "custom: header\r\nconnection: close\r\nexpect: \r\n",
 				'follow_location' => 0,
 				'protocol_version' => 1.1,
 				'ignore_errors' => TRUE,
@@ -84,4 +62,4 @@ test(function() {
 });
 
 
-Assert::same(8, Assert::$counter);
+Assert::same(6, Assert::$counter);

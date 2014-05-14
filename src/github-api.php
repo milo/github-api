@@ -15,6 +15,7 @@ require __DIR__ . '/Github/Http/Message.php';
 require __DIR__ . '/Github/Http/Request.php';
 require __DIR__ . '/Github/Http/Response.php';
 require __DIR__ . '/Github/Http/CachedClient.php';
+require __DIR__ . '/Github/Http/AbstractClient.php';
 require __DIR__ . '/Github/Http/StreamClient.php';
 
 require __DIR__ . '/Github/OAuth/Configuration.php';
