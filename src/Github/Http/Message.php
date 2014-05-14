@@ -18,9 +18,6 @@ abstract class Message extends Github\Sanity
 	/** @var string|NULL */
 	private $content;
 
-	/** @var Message|NULL */
-	private $previous;
-
 
 	/**
 	 * @param  array
@@ -106,31 +103,6 @@ abstract class Message extends Github\Sanity
 	public function getContent()
 	{
 		return $this->content;
-	}
-
-
-	/**
-	 * @return Message|NULL
-	 */
-	public function getPrevious()
-	{
-		return $this->previous;
-	}
-
-
-	/**
-	 * @return self
-	 *
-	 * @throws Github\LogicException
-	 */
-	public function setPrevious(self $previous = NULL)
-	{
-		if ($this->previous) {
-			throw new Github\LogicException('Previous is already set.');
-		}
-		$this->previous = $previous;
-
-		return $this;
 	}
 
 }

@@ -28,6 +28,9 @@ class Response extends Message
 	/** @var int */
 	private $code;
 
+	/** @var Response */
+	private $previous;
+
 
 	/**
 	 * @param  int
@@ -58,6 +61,31 @@ class Response extends Message
 	public function isCode($code)
 	{
 		return $this->code === (int) $code;
+	}
+
+
+	/**
+	 * @return Response|NULL
+	 */
+	public function getPrevious()
+	{
+		return $this->previous;
+	}
+
+
+	/**
+	 * @return self
+	 *
+	 * @throws Github\LogicException
+	 */
+	public function setPrevious(Response $previous = NULL)
+	{
+		if ($this->previous) {
+			throw new Github\LogicException('Previous response is already set.');
+		}
+		$this->previous = $previous;
+
+		return $this;
 	}
 
 }

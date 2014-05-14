@@ -49,16 +49,3 @@ Assert::false($message->hasHeader('a'));
 # Content
 Assert::same(NULL, (new TestMessage([], NULL))->getContent());
 Assert::same('', (new TestMessage([], ''))->getContent());
-
-
-# Previous
-$message = new TestMessage;
-$previous = new TestMessage;
-Assert::null($message->getPrevious());
-
-$message->setPrevious($previous);
-Assert::same($previous, $message->getPrevious());
-
-Assert::exception(function() use ($message, $previous) {
-	$message->setPrevious($previous);
-}, 'Milo\Github\LogicException', 'Previous is already set.');
