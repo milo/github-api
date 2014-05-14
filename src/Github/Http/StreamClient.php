@@ -2,8 +2,6 @@
 
 namespace Milo\Github\Http;
 
-use Milo\Github\Storages;
-
 
 /**
  * Client which use the file_get_contents() with a HTTP context options.

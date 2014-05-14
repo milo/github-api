@@ -4,7 +4,6 @@
 
 Todo
 ----
-- HTTP\CurlClient
 - pagination helpers
 
 

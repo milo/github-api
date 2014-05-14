@@ -3,7 +3,6 @@
 namespace Milo\Github\Http;
 
 use Milo\Github;
-use Milo\Github\Storages;
 
 
 /**
