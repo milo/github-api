@@ -27,6 +27,7 @@ $client = new MockIClient;
 $api = new Milo\Github\Api($client);
 $request = new Milo\Github\Http\Request('', '', ['Foo' => 'bar']);
 
+
 # Default headers, no token
 $client->onRequest = function(Milo\Github\Http\Request $request) {
 	Assert::true($request->hasHeader('Accept'));
@@ -37,11 +38,20 @@ $client->onRequest = function(Milo\Github\Http\Request $request) {
 };
 $api->request($request);
 
+
 # With token
 $token = new Milo\Github\OAuth\Token('hash', 'type', []);
 $api->setToken($token);
 $client->onRequest = function(Milo\Github\Http\Request $request) {
 	Assert::true($request->hasHeader('Authorization'));
+};
+$api->request($request);
+
+
+# Without token again
+$api->setToken(NULL);
+$client->onRequest = function(Milo\Github\Http\Request $request) {
+	Assert::false($request->hasHeader('Authorization'));
 };
 $api->request($request);
 
@@ -103,4 +113,4 @@ $client->onRequest = function(Milo\Github\Http\Request $request) {
 $api->put('/url', '{content}', ['a' => 'b'], ['Foo' => 'bar']);
 
 
-Assert::same(27, Assert::$counter);
+Assert::same(28, Assert::$counter);

@@ -24,7 +24,7 @@ class Api extends Sanity
 	/** @var Http\IClient */
 	private $client;
 
-	/** @var OAuth\Token */
+	/** @var OAuth\Token|NULL */
 	private $token;
 
 
@@ -37,7 +37,7 @@ class Api extends Sanity
 	/**
 	 * @return self
 	 */
-	public function setToken(OAuth\Token $token)
+	public function setToken(OAuth\Token $token = NULL)
 	{
 		$this->token = $token;
 		return $this;
