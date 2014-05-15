@@ -18,6 +18,9 @@ class Api extends Sanity
 	/** @var string */
 	private $defaultAccept = 'application/vnd.github.v3+json';
 
+	/** @var array|NULL */
+	private $defaultParameters = [];
+
 	/** @var Http\IClient */
 	private $client;
 
@@ -38,6 +41,26 @@ class Api extends Sanity
 	{
 		$this->token = $token;
 		return $this;
+	}
+
+
+	/**
+	 * @param  array
+	 * @return self
+	 */
+	public function setDefaultParameters(array $defaults = NULL)
+	{
+		$this->defaultParameters = $defaults ?: [];
+		return $this;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getDefaultParameters()
+	{
+		return $this->defaultParameters;
 	}
 
 
@@ -184,6 +207,7 @@ class Api extends Sanity
 	 */
 	public function createRequest($method, $urlPath, array $parameters = [], array $headers = [], $content = NULL)
 	{
+		$parameters += $this->defaultParameters;
 		$this->substituteUrlParameters($urlPath, $parameters);
 
 		$url = rtrim($this->url, '/') . '/' . trim($urlPath, '/');
