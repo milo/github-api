@@ -27,7 +27,7 @@ class Token extends Github\Sanity
 	 * @param  string
 	 * @param  string[]
 	 */
-	public function __construct($value, $type, array $scopes)
+	public function __construct($value, $type = '', array $scopes = [])
 	{
 		$this->value = $value;
 		$this->type = $type;

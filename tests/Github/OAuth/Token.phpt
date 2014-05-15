@@ -7,9 +7,16 @@
 require __DIR__ . '/../../bootstrap.php';
 
 
-$token = new Milo\Github\OAuth\Token('hash', 'type', ['user']);
+$token = new Milo\Github\OAuth\Token('hash1');
 
-Assert::same('hash', $token->getValue());
+Assert::same('hash1', $token->getValue());
+Assert::same('', $token->getType());
+Assert::same([], $token->getScopes());
+
+
+$token = new Milo\Github\OAuth\Token('hash2', 'type', ['user']);
+
+Assert::same('hash2', $token->getValue());
 Assert::same('type', $token->getType());
 Assert::same(['user'], $token->getScopes());
 Assert::true($token->hasScope('user'));
