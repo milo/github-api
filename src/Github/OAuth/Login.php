@@ -67,11 +67,10 @@ class Login extends Github\Sanity
 		$url = $this->authUrl . '?' . http_build_query($params);
 		if ($redirectCb === NULL) {
 			header("Location: $url");
+			die();
 		} else {
 			call_user_func($redirectCb, $url);
 		}
-
-		die();
 	}
 
 
