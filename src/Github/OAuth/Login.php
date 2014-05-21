@@ -121,7 +121,7 @@ class Login extends Github\Sanity
 			throw new LoginException('Bad JSON in response.', 0, $e);
 		}
 
-		$token = new Token($json->access_token, $json->token_type, explode(',', $json->scope));
+		$token = new Token($json->access_token, $json->token_type, strlen($json->scope) ? explode(',', $json->scope) : []);
 		$this->storage->set('auth.token', $token);
 		$this->storage->remove('auth.state');
 

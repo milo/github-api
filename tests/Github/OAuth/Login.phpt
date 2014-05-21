@@ -61,6 +61,23 @@ Assert::same($login, $login->dropToken());
 Assert::false($login->hasToken());
 
 
+# Obtain token with empty scopes
+$storage->set('auth.state', '*****');
+$client->onRequest = function(Milo\Github\Http\Request $request) {
+	return new Milo\Github\Http\Response(200, [], '{"access_token":"hash","token_type":"type","scope":""}');
+};
+$token = $login->obtainToken('tmp-code', '*****');
+Assert::same('hash', $token->getValue());
+Assert::same('type', $token->getType());
+Assert::same([], $token->getScopes());
+
+Assert::true($login->hasToken());
+Assert::type('Milo\Github\OAuth\Token', $login->getToken());
+
+Assert::same($login, $login->dropToken());
+Assert::false($login->hasToken());
+
+
 # Bad security state
 $storage->set('auth.state', '*****');
 Assert::exception(function() use ($login) {
