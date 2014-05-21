@@ -51,6 +51,12 @@ class CachingTestCase extends Tester\TestCase
 	}
 
 
+	public function testBasics()
+	{
+		Assert::same($this->mockClient, $this->client->getInnerClient());
+	}
+
+
 	public function testNoCaching()
 	{
 		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {

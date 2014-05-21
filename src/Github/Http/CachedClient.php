@@ -28,6 +28,15 @@ class CachedClient extends Github\Sanity implements IClient
 
 
 	/**
+	 * @return IClient
+	 */
+	public function getInnerClient()
+	{
+		return $this->client;
+	}
+
+
+	/**
 	 * @return Response
 	 *
 	 * @throws BadResponseException
