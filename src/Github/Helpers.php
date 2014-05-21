@@ -22,6 +22,10 @@ class Helpers
 	];
 
 
+	/** @var Http\IClient */
+	private static $client;
+
+
 	/**
 	 * @param  mixed
 	 * @return string
@@ -80,13 +84,18 @@ class Helpers
 
 
 	/**
+	 * @param  bool
 	 * @return Http\IClient
 	 */
-	public static function createDefaultClient()
+	public static function createDefaultClient($newInstance = FALSE)
 	{
-		return extension_loaded('curl')
-			? new Http\CurlClient
-			: new Http\StreamClient;
+		if (self::$client === NULL || $newInstance) {
+			self::$client = extension_loaded('curl')
+				? new Http\CurlClient
+				: new Http\StreamClient;
+		}
+
+		return self::$client;
 	}
 
 }
