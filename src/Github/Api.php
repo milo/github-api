@@ -45,6 +45,15 @@ class Api extends Sanity
 
 
 	/**
+	 * @return OAuth\Token|NULL
+	 */
+	public function getToken()
+	{
+		return $this->token;
+	}
+
+
+	/**
 	 * @param  array
 	 * @return self
 	 */

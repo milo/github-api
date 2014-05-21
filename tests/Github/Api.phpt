@@ -29,7 +29,6 @@ class TestApi extends Milo\Github\Api
 
 
 
-
 # Basics
 test(function() {
 	$client = new MockIClient;
@@ -39,6 +38,13 @@ test(function() {
 	Assert::same('https://api.github.com', $api->getUrl());
 	Assert::same($api, $api->setUrl('url://test'));
 	Assert::same('url://test', $api->getUrl());
+
+	$token = new Milo\Github\OAuth\Token('hash');
+	Assert::null($api->getToken());
+	Assert::same($api, $api->setToken($token));
+	Assert::same($token, $api->getToken());
+	$api->setToken(NULL);
+	Assert::null($api->getToken());
 });
 
 
