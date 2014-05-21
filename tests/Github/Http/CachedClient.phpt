@@ -20,8 +20,8 @@ class MockClient implements Milo\Github\Http\IClient
 		return call_user_func($this->onRequest, $request);
 	}
 
-	public function onRequest($callback) {}
-	public function onResponse($callback) {}
+	public function onRequest($foo) { trigger_error("Inner onRequest called: $foo", E_USER_NOTICE); }
+	public function onResponse($foo) { trigger_error("Inner onResponse called: $foo", E_USER_NOTICE); }
 }
 
 
@@ -54,6 +54,14 @@ class CachingTestCase extends Tester\TestCase
 	public function testBasics()
 	{
 		Assert::same($this->mockClient, $this->client->getInnerClient());
+
+		Assert::error(function() {
+			Assert::same($this->client, $this->client->onRequest('callback-1'));
+			Assert::same($this->client, $this->client->onResponse('callback-2'));
+		}, [
+			[E_USER_NOTICE, 'Inner onRequest called: callback-1'],
+			[E_USER_NOTICE, 'Inner onResponse called: callback-2'],
+		]);
 	}
 
 
