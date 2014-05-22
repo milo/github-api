@@ -19,6 +19,9 @@ class CachedClient extends Github\Sanity implements IClient
 	/** @var IClient */
 	private $client;
 
+	/** @var callable|NULL */
+	private $onResponse;
+
 
 	public function __construct(Storages\ICache $cache, IClient $client = NULL)
 	{
@@ -75,6 +78,8 @@ class CachedClient extends Github\Sanity implements IClient
 			$response = $cached->setPrevious($response);
 		}
 
+		$this->onResponse && call_user_func($this->onResponse, $response);
+
 		return $response;
 	}
 
@@ -96,7 +101,8 @@ class CachedClient extends Github\Sanity implements IClient
 	 */
 	public function onResponse($callback)
 	{
-		$this->client->onResponse($callback);
+		$this->client->onResponse(NULL);
+		$this->onResponse = $callback;
 		return $this;
 	}
 

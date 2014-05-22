@@ -20,8 +20,8 @@ class MockClient implements Milo\Github\Http\IClient
 		return call_user_func($this->onRequest, $request);
 	}
 
-	public function onRequest($foo) { trigger_error("Inner onRequest called: $foo", E_USER_NOTICE); }
-	public function onResponse($foo) { trigger_error("Inner onResponse called: $foo", E_USER_NOTICE); }
+	public function onRequest($foo) { trigger_error('Inner onRequest called: ' . var_export($foo, TRUE), E_USER_NOTICE); }
+	public function onResponse($foo) { trigger_error('Inner onResponse called: ' . var_export($foo, TRUE), E_USER_NOTICE); }
 }
 
 
@@ -40,34 +40,46 @@ class CachingTestCase extends Tester\TestCase
 	private $client;
 
 	/** @var MockClient */
-	private $mockClient;
+	private $innerClient;
 
 
 	public function setup()
 	{
 		$cache = new MockCache;
-		$this->mockClient = new MockClient;
-		$this->client = new \Milo\Github\Http\CachedClient($cache, $this->mockClient);
+		$this->innerClient = new MockClient;
+		$this->client = new \Milo\Github\Http\CachedClient($cache, $this->innerClient);
 	}
 
 
 	public function testBasics()
 	{
-		Assert::same($this->mockClient, $this->client->getInnerClient());
+		Assert::same($this->innerClient, $this->client->getInnerClient());
 
 		Assert::error(function() {
 			Assert::same($this->client, $this->client->onRequest('callback-1'));
 			Assert::same($this->client, $this->client->onResponse('callback-2'));
 		}, [
-			[E_USER_NOTICE, 'Inner onRequest called: callback-1'],
-			[E_USER_NOTICE, 'Inner onResponse called: callback-2'],
+			[E_USER_NOTICE, "Inner onRequest called: 'callback-1'"],
+			[E_USER_NOTICE, 'Inner onResponse called: NULL'],
 		]);
+
+		$onResponseCalled = FALSE;
+		$this->innerClient->onRequest = function () {
+			return new Milo\Github\Http\Response(200, [], '');
+		};
+		Assert::error(function() use (& $onResponseCalled) {
+			$this->client->onResponse(function() use (& $onResponseCalled) { $onResponseCalled = TRUE; });
+		}, E_USER_NOTICE, 'Inner onResponse called: NULL');
+		$this->client->request(
+			new Milo\Github\Http\Request('', '')
+		);
+		Assert::true($onResponseCalled);
 	}
 
 
 	public function testNoCaching()
 	{
-		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
 			Assert::false($request->hasHeader('ETag'));
 			Assert::false($request->hasHeader('If-Modified-Since'));
 
@@ -88,7 +100,7 @@ class CachingTestCase extends Tester\TestCase
 
 	public function testETagCaching()
 	{
-		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
 			Assert::false($request->hasHeader('If-None-Match'));
 			Assert::false($request->hasHeader('If-Modified-Since'));
 
@@ -100,7 +112,7 @@ class CachingTestCase extends Tester\TestCase
 		);
 		Assert::same('response-1', $response->getContent());
 
-		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
 			Assert::same('e-tag', $request->getHeader('If-None-Match'));
 			Assert::false($request->hasHeader('If-Modified-Since'));
 
@@ -119,7 +131,7 @@ class CachingTestCase extends Tester\TestCase
 
 	public function testIfModifiedCaching()
 	{
-		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
 			Assert::false($request->hasHeader('If-None-Match'));
 			Assert::false($request->hasHeader('If-Modified-Since'));
 
@@ -131,7 +143,7 @@ class CachingTestCase extends Tester\TestCase
 		);
 		Assert::same('response-1', $response->getContent());
 
-		$this->mockClient->onRequest = function (Milo\Github\Http\Request $request) {
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
 			Assert::false($request->hasHeader('ETag'));
 			Assert::same('today', $request->getHeader('If-Modified-Since'));
 
