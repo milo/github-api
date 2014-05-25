@@ -24,3 +24,4 @@ require __DIR__ . '/Github/OAuth/Token.php';
 require __DIR__ . '/Github/OAuth/Login.php';
 
 require __DIR__ . '/Github/Api.php';
+require __DIR__ . '/Github/Paginator.php';
