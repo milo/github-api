@@ -287,6 +287,25 @@ class Api extends Sanity
 
 
 	/**
+	 * Creates paginator for HTTP GET requests.
+	 *
+	 * @see get()
+	 *
+	 * @param  string
+	 * @return Paginator
+	 *
+	 * @throws MissingParameterException
+	 */
+	public function paginator($urlPath, array $parameters = [], array $headers = [])
+	{
+		return new Paginator(
+			$this,
+			$this->createRequest(Http\Request::GET, $urlPath, $parameters, $headers)
+		);
+	}
+
+
+	/**
 	 * @return Http\IClient
 	 */
 	public function getClient()

@@ -135,3 +135,12 @@ test(function() {
 	$request = $api->createRequest('', 'path', ['foo' => 'fuzz'], [], NULL);
 	Assert::same('url://test/path?foo=fuzz', $request->getUrl());
 });
+
+
+# Paginator
+test(function() {
+	$client = new MockIClient;
+	$api = new TestApi($client);
+
+	Assert::type('Milo\Github\Paginator', $api->paginator(''));
+});
