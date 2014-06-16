@@ -28,7 +28,7 @@ test(function() {
 		Assert::same([
 			'http' => [
 				'method' => 'METHOD',
-				'header' => "custom: header\r\nconnection: close\r\nexpect: \r\n",
+				'header' => "custom: header\r\nexpect: \r\nconnection: close\r\n",
 				'follow_location' => 0,
 				'protocol_version' => 1.1,
 				'ignore_errors' => TRUE,

@@ -13,12 +13,20 @@ class StreamClient extends AbstractClient
 	/** @var array|NULL */
 	private $sslOptions;
 
+
 	/**
 	 * @param  array  SSL context options {@link http://php.net/manual/en/context.ssl.php}
 	 */
 	public function __construct(array $sslOptions = NULL)
 	{
 		$this->sslOptions = $sslOptions;
+	}
+
+
+	protected function setupRequest(Request $request)
+	{
+		parent::setupRequest($request);
+		$request->setHeader('Connection', 'close');
 	}
 
 

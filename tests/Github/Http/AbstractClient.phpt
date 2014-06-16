@@ -79,7 +79,6 @@ test(function(){
 	$client = new TestClient;
 	$client->onProcess = function(Milo\Github\Http\Request $request) {
 		Assert::same([
-			'connection' => 'close',
 			'expect' => '',
 		], $request->getHeaders());
 

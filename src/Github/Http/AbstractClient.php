@@ -95,7 +95,6 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 
 	protected function setupRequest(Request $request)
 	{
-		$request->addHeader('Connection', 'close');
 		$request->addHeader('Expect', '');
 	}
 

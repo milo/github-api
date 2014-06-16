@@ -15,6 +15,9 @@ class CurlClient extends AbstractClient
 	/** @var array|NULL */
 	private $options;
 
+	/** @var resource */
+	private $curl;
+
 
 	/**
 	 * @param  array  cURL options {@link http://php.net/manual/en/function.curl-setopt.php}
@@ -28,6 +31,13 @@ class CurlClient extends AbstractClient
 		}
 
 		$this->options = $options;
+	}
+
+
+	protected function setupRequest(Request $request)
+	{
+		parent::setupRequest($request);
+		$request->addHeader('Connection', 'keep-alive');
 	}
 
 
@@ -51,37 +61,36 @@ class CurlClient extends AbstractClient
 
 		$hardOptions = [
 			CURLOPT_FOLLOWLOCATION => FALSE, # Github sets the Location header for 201 code too and redirection is not required for us
-			CURLOPT_FORBID_REUSE => TRUE,
 			CURLOPT_HEADER => TRUE,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 			CURLOPT_CUSTOMREQUEST => $request->getMethod(),
+			CURLOPT_NOBODY => $request->isMethod(Request::HEAD),
 			CURLOPT_URL => $request->getUrl(),
 			CURLOPT_HTTPHEADER => $headers,
 			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_POSTFIELDS => $request->getContent(),
 		];
 
-		if (($content = $request->getContent()) !== NULL) {
-			$hardOptions[CURLOPT_POSTFIELDS] = $content;
+		if (!$this->curl) {
+			$this->curl = curl_init();
+			if ($this->curl === FALSE) {
+				throw new BadResponseException('Cannot init cURL handler.');
+			}
 		}
 
-		$curl = curl_init();
-		if ($curl === FALSE) {
-			throw new BadResponseException('Cannot init cURL handler.');
-		}
-
-		$result = curl_setopt_array($curl, $hardOptions + ($this->options ?: []) + $softOptions);
+		$result = curl_setopt_array($this->curl, $hardOptions + ($this->options ?: []) + $softOptions);
 		if ($result === FALSE) {
-			throw new BadResponseException('Setting cURL options failed: ' . curl_error($curl), curl_errno($curl));
+			throw new BadResponseException('Setting cURL options failed: ' . curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		$result = curl_exec($curl);
+		$result = curl_exec($this->curl);
 		if ($result === FALSE) {
-			throw new BadResponseException(curl_error($curl), curl_errno($curl));
+			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
 		}
 		list($headersStr, $content) = explode("\r\n\r\n", $result, 2) + ['', ''];
 
-		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		$code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 		if ($code === FALSE) {
 			throw new BadResponseException('HTTP status code is missing.');
 		}
