@@ -43,8 +43,7 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 		$counter = $this->maxRedirects;
 		$previous = NULL;
 		do {
-			$request->addHeader('Connection', 'close');
-			$request->addHeader('Expect', '');
+			$this->setupRequest($request);
 
 			$this->onRequest && call_user_func($this->onRequest, $request);
 			$response = $this->process($request);
@@ -91,6 +90,13 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 	{
 		$this->onResponse = $callback;
 		return $this;
+	}
+
+
+	protected function setupRequest(Request $request)
+	{
+		$request->addHeader('Connection', 'close');
+		$request->addHeader('Expect', '');
 	}
 
 
