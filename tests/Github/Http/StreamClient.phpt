@@ -34,6 +34,11 @@ test(function() {
 				'ignore_errors' => TRUE,
 				'content' => '{content}',
 			],
+			'ssl' => [
+				'verify_peer' => TRUE,
+				'cafile' => realpath(__DIR__ . '/../../../src/ca-chain.crt'),
+				'disable_compression' => TRUE,
+			],
 		], $contextOptions);
 
 		return [200, ['Content-Type' => 'foo'], '{response}'];
@@ -52,7 +57,12 @@ test(function() {
 	$client = new TestClient(['option' => 'value']);
 	$client->onFileGetContents = function($url, array $contextOptions) {
 		Assert::type('array', $contextOptions['ssl']);
-		Assert::same(['option' => 'value'], $contextOptions['ssl']);
+		Assert::same([
+			'option' => 'value',
+			'verify_peer' => TRUE,
+			'cafile' => realpath(__DIR__ . '/../../../src/ca-chain.crt'),
+			'disable_compression' => TRUE,
+		], $contextOptions['ssl']);
 
 		return [200, [], ''];
 	};

@@ -52,6 +52,11 @@ class StreamClient extends AbstractClient
 				'protocol_version' => 1.1,
 				'ignore_errors' => TRUE,
 			],
+			'ssl' => [
+				'verify_peer' => TRUE,
+				'cafile' => realpath(__DIR__ . '/../../ca-chain.crt'),
+				'disable_compression' => TRUE,  # Effective since PHP 5.4.13
+			],
 		];
 
 		if (($content = $request->getContent()) !== NULL) {
@@ -59,7 +64,7 @@ class StreamClient extends AbstractClient
 		}
 
 		if ($this->sslOptions) {
-			$options['ssl'] = $this->sslOptions;
+			$options['ssl'] = $this->sslOptions + $options['ssl'];
 		}
 
 		list($code, $headers, $content) = $this->fileGetContents($request->getUrl(), $options);
