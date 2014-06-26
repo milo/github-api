@@ -11,7 +11,7 @@ composer require milo/github-api
 
 
 # Documentation
-On [wiki pages](https://github.com/milo/github-api/wiki).
+Everything at [wiki pages](https://github.com/milo/github-api/wiki), including the [short classes description](https://github.com/milo/github-api/wiki/Classes-description).
 
 
 Quick Start
