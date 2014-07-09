@@ -100,6 +100,14 @@ namespace Milo\Github {
 
 
 	/**
+	 * Rate limit exceed.
+	 * @see https://developer.github.com/v3/#rate-limiting
+	 */
+	class RateLimitExceedException extends ForbiddenException
+	{}
+
+
+	/**
 	 * Resource not found.
 	 * @see https://developer.github.com/v3/#authentication
 	 */

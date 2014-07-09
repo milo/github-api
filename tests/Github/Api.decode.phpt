@@ -59,6 +59,13 @@ Assert::null($e->getPrevious());
 
 
 $e = Assert::exception(function() use ($api) {
+	$response = new Milo\Github\Http\Response(403, ['Content-Type' => 'application/json', 'X-RateLimit-Remaining' => '0'], '{"message":"error"}');
+	$api->decode($response);
+}, 'Milo\Github\RateLimitExceedException', 'error', 403);
+Assert::null($e->getPrevious());
+
+
+$e = Assert::exception(function() use ($api) {
 	$response = new Milo\Github\Http\Response(404, [], '');
 	$api->decode($response);
 }, 'Milo\Github\NotFoundException', 'Resource not found or not authorized to access.', 404);

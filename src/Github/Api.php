@@ -266,6 +266,9 @@ class Api extends Sanity
 					throw new UnauthorizedException($content->message, $code, NULL, $response);
 
 				case Http\Response::S403_FORBIDDEN:
+					if ($response->getHeader('X-RateLimit-Remaining') === '0') {
+						throw new RateLimitExceedException($content->message, $code, NULL, $response);
+					}
 					throw new ForbiddenException($content->message, $code, NULL, $response);
 
 				case Http\Response::S404_NOT_FOUND:
