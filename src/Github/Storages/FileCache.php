@@ -23,12 +23,18 @@ class FileCache extends Github\Sanity implements ICache
 	 */
 	public function __construct($tempDir)
 	{
+		if (!is_dir($tempDir)) {
+			throw new MissingDirectoryException("Directory '$tempDir' is missing.");
+		}
+
 		$dir = $tempDir . DIRECTORY_SEPARATOR . 'milo.github-api';
 
 		if (!is_dir($dir)) {
 			set_error_handler(function($severity, $message, $file, $line) use ($dir, & $valid) {
 				restore_error_handler();
-				throw new MissingDirectoryException("Temporary directory '$dir' is missing.'", 0, new \ErrorException($message, 0, $severity, $file, $line));
+				if (!is_dir($dir)) {
+					throw new MissingDirectoryException("Cannot create '$dir' directory.", 0, new \ErrorException($message, 0, $severity, $file, $line));
+				}
 			});
 			mkdir($dir);
 			restore_error_handler();
