@@ -19,14 +19,23 @@ class CachedClient extends Github\Sanity implements IClient
 	/** @var IClient */
 	private $client;
 
+	/** @var bool */
+	private $forbidRecheck;
+
 	/** @var callable|NULL */
 	private $onResponse;
 
 
-	public function __construct(Storages\ICache $cache, IClient $client = NULL)
+	/**
+	 * @param Storages\ICache
+	 * @param IClient
+	 * @param bool  forbid checking Github for new data; more or less development purpose only
+	 */
+	public function __construct(Storages\ICache $cache, IClient $client = NULL, $forbidRecheck = FALSE)
 	{
 		$this->cache = $cache;
 		$this->client = $client ?: Github\Helpers::createDefaultClient();
+		$this->forbidRecheck = (bool) $forbidRecheck;
 	}
 
 
@@ -59,6 +68,12 @@ class CachedClient extends Github\Sanity implements IClient
 		]);
 
 		if ($cached = $this->cache->load($cacheKey)) {
+			if ($this->forbidRecheck) {
+				$cached = clone $cached;
+				$this->onResponse && call_user_func($this->onResponse, $cached);
+				return $cached;
+			}
+
 			/** @var $cached Response */
 			if ($cached->hasHeader('ETag')) {
 				$request->addHeader('If-None-Match', $cached->getHeader('ETag'));

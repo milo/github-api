@@ -47,7 +47,7 @@ class CachingTestCase extends Tester\TestCase
 	{
 		$cache = new MockCache;
 		$this->innerClient = new MockClient;
-		$this->client = new \Milo\Github\Http\CachedClient($cache, $this->innerClient);
+		$this->client = new Milo\Github\Http\CachedClient($cache, $this->innerClient);
 	}
 
 
@@ -188,6 +188,70 @@ class CachingTestCase extends Tester\TestCase
 		Assert::same('inner-200', $response->getContent());
 		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
 		Assert::same('inner-304', $response->getPrevious()->getContent());
+	}
+
+
+	public function testForbidRecheckDisabled()
+	{
+		$client = new Milo\Github\Http\CachedClient(new MockCache, $this->innerClient);
+
+		$count = 0;
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) use (& $count) {
+			$count++;
+			return $request->hasHeader('If-None-Match')
+				? new Milo\Github\Http\Response(304, [], 'inner-304')
+				: new Milo\Github\Http\Response(200, ['ETag' => '"test"'], 'inner-200');
+		};
+
+		$request = new Milo\Github\Http\Request('', '');
+
+		$response = $client->request($request);
+		Assert::same(1, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::null($response->getPrevious());
+
+		$response = $client->request($request);
+		Assert::same(2, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::same('inner-304', $response->getPrevious()->getContent());
+
+		$response = $client->request($request);
+		Assert::same(3, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::same('inner-304', $response->getPrevious()->getContent());
+	}
+
+
+	public function testForbidRecheckEnabled()
+	{
+		$client = new Milo\Github\Http\CachedClient(new MockCache, $this->innerClient, TRUE);
+
+		$count = 0;
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) use (& $count) {
+			$count++;
+			return $request->hasHeader('If-None-Match')
+				? new Milo\Github\Http\Response(304, [], 'inner-304')
+				: new Milo\Github\Http\Response(200, ['ETag' => '"test"'], 'inner-200');
+		};
+
+		$request = new Milo\Github\Http\Request('', '');
+
+		$response = $client->request($request);
+		Assert::same(1, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::null($response->getPrevious());
+
+		$response = $client->request($request);
+		Assert::same(1, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::null($response->getPrevious());
+
+		$response = $client->request($request);
+		Assert::same(1, $count);
+		Assert::same('inner-200', $response->getContent());
+		Assert::null($response->getPrevious());
 	}
 
 }
