@@ -74,6 +74,8 @@ class CachedClient extends Github\Sanity implements IClient
 		}
 
 		if (isset($cached) && $response->getCode() === Response::S304_NOT_MODIFIED) {
+			$cached = clone $cached;
+
 			/** @todo Should be responses somehow combined into one? */
 			$response = $cached->setPrevious($response);
 		}

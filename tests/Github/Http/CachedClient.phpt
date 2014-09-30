@@ -159,6 +159,37 @@ class CachingTestCase extends Tester\TestCase
 		Assert::same(304, $response->getPrevious()->getCode());
 	}
 
+
+	public function testRepeatedRequest()
+	{
+		$this->innerClient->onRequest = function (Milo\Github\Http\Request $request) {
+			if ($request->hasHeader('If-None-Match')) {
+				return new Milo\Github\Http\Response(304, [], 'inner-304');
+			}
+
+			return new Milo\Github\Http\Response(200, ['ETag' => '"test"'], 'inner-200');
+		};
+
+		$request = new Milo\Github\Http\Request('', '');
+
+		# Empty cache
+		$response = $this->client->request($request);
+		Assert::same('inner-200', $response->getContent());
+		Assert::null($response->getPrevious());
+
+		# From cache
+		$response = $this->client->request($request);
+		Assert::same('inner-200', $response->getContent());
+		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::same('inner-304', $response->getPrevious()->getContent());
+
+		# Again
+		$response = $this->client->request($request);
+		Assert::same('inner-200', $response->getContent());
+		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::same('inner-304', $response->getPrevious()->getContent());
+	}
+
 }
 
 (new CachingTestCase)->run();
