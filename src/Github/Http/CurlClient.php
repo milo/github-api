@@ -53,6 +53,8 @@ class CurlClient extends AbstractClient
 			$headers[] = "$name: $value";
 		}
 
+		$responseHeaders = NULL;
+
 		$softOptions = [
 			CURLOPT_CONNECTTIMEOUT => 10,
 			CURLOPT_SSL_VERIFYHOST => 2,
@@ -62,7 +64,6 @@ class CurlClient extends AbstractClient
 
 		$hardOptions = [
 			CURLOPT_FOLLOWLOCATION => FALSE, # Github sets the Location header for 201 code too and redirection is not required for us
-			CURLOPT_HEADER => TRUE,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 			CURLOPT_CUSTOMREQUEST => $request->getMethod(),
@@ -71,6 +72,19 @@ class CurlClient extends AbstractClient
 			CURLOPT_HTTPHEADER => $headers,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_POSTFIELDS => $request->getContent(),
+			CURLOPT_HEADER => FALSE,
+			CURLOPT_HEADERFUNCTION => function($curl, $line) use (& $responseHeaders) {
+				if ($responseHeaders === NULL) {
+					$responseHeaders = [];
+					# and skip 1st line, it is HTTP code
+
+				} elseif ($line !== "\r\n") {
+					list($name, $value) = explode(':', $line, 2);
+					$responseHeaders[trim($name)] = trim($value);
+				}
+
+				return strlen($line);
+			},
 		];
 
 		if (!$this->curl) {
@@ -85,14 +99,14 @@ class CurlClient extends AbstractClient
 			throw new BadResponseException('Setting cURL options failed: ' . curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		$result = curl_exec($this->curl);
-		if ($result === FALSE) {
+		$responseHeaders = NULL;
+		$content = curl_exec($this->curl);
+		if ($content === FALSE) {
 			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		$headersLength = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
-		if ($headersLength === FALSE) {
-			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
+		if (!is_array($responseHeaders)) {
+			throw new BadResponseException('Response headers were not fetched.');
 		}
 
 		$code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
@@ -100,16 +114,7 @@ class CurlClient extends AbstractClient
 			throw new BadResponseException('HTTP status code is missing:' . curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		$headersStr = trim(substr($result, 0, $headersLength));
-		$content = (string) substr($result, $headersLength);
-
-		$headers = [];
-		foreach (array_slice(explode("\r\n", $headersStr), 1) as $header) {
-			list($name, $value) = explode(': ', $header);
-			$headers[$name] = $value;
-		}
-
-		return new Response($code, $headers, $content);
+		return new Response($code, $responseHeaders, $content);
 	}
 
 }
