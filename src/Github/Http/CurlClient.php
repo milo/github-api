@@ -89,12 +89,19 @@ class CurlClient extends AbstractClient
 		if ($result === FALSE) {
 			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
 		}
-		list($headersStr, $content) = explode("\r\n\r\n", $result, 2) + ['', ''];
+
+		$headersLength = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
+		if ($headersLength === FALSE) {
+			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
+		}
 
 		$code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 		if ($code === FALSE) {
-			throw new BadResponseException('HTTP status code is missing.');
+			throw new BadResponseException('HTTP status code is missing:' . curl_error($this->curl), curl_errno($this->curl));
 		}
+
+		$headersStr = trim(substr($result, 0, $headersLength));
+		$content = (string) substr($result, $headersLength);
 
 		$headers = [];
 		foreach (array_slice(explode("\r\n", $headersStr), 1) as $header) {
