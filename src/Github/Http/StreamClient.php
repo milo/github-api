@@ -103,8 +103,8 @@ class StreamClient extends AbstractClient
 
 		$headers = [];
 		foreach ($http_response_header as $header) {
-			list($name, $value) = explode(': ', $header, 2) + [NULL, NULL];
-			$headers[$name] = $value;
+			list($name, $value) = explode(':', $header, 2) + [NULL, NULL];
+			$headers[trim($name)] = trim($value);
 		}
 
 		return [$m[1], $headers, $content];
