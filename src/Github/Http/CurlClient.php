@@ -53,7 +53,7 @@ class CurlClient extends AbstractClient
 			$headers[] = "$name: $value";
 		}
 
-		$responseHeaders = NULL;
+		$responseHeaders = [];
 
 		$softOptions = [
 			CURLOPT_CONNECTTIMEOUT => 10,
@@ -74,9 +74,10 @@ class CurlClient extends AbstractClient
 			CURLOPT_POSTFIELDS => $request->getContent(),
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_HEADERFUNCTION => function($curl, $line) use (& $responseHeaders) {
-				if ($responseHeaders === NULL) {
+				if (strncasecmp($line, 'HTTP/', 5) === 0) {
+					/** @todo Set proxy response as Response::setPrevious($proxyResponse)? */
+					# The HTTP/x.y may occur multiple times with proxy (HTTP/1.1 200 Connection Established)
 					$responseHeaders = [];
-					# and skip 1st line, it is HTTP code
 
 				} elseif ($line !== "\r\n") {
 					list($name, $value) = explode(':', $line, 2);
@@ -99,14 +100,9 @@ class CurlClient extends AbstractClient
 			throw new BadResponseException('Setting cURL options failed: ' . curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		$responseHeaders = NULL;
 		$content = curl_exec($this->curl);
 		if ($content === FALSE) {
 			throw new BadResponseException(curl_error($this->curl), curl_errno($this->curl));
-		}
-
-		if (!is_array($responseHeaders)) {
-			throw new BadResponseException('Response headers were not fetched.');
 		}
 
 		$code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
