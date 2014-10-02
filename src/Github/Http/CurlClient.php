@@ -65,7 +65,6 @@ class CurlClient extends AbstractClient
 		$hardOptions = [
 			CURLOPT_FOLLOWLOCATION => FALSE, # Github sets the Location header for 201 code too and redirection is not required for us
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 			CURLOPT_CUSTOMREQUEST => $request->getMethod(),
 			CURLOPT_NOBODY => $request->isMethod(Request::HEAD),
 			CURLOPT_URL => $request->getUrl(),
@@ -87,6 +86,10 @@ class CurlClient extends AbstractClient
 				return strlen($line);
 			},
 		];
+
+		if (defined('CURLOPT_PROTOCOLS')) {  # HHVM issue. Even cURL v7.26.0, constants are missing.
+			$hardOptions[CURLOPT_PROTOCOLS] = CURLPROTO_HTTP | CURLPROTO_HTTPS;
+		}
 
 		if (!$this->curl) {
 			$this->curl = curl_init();
