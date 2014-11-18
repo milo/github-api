@@ -352,7 +352,7 @@ class Api extends Sanity
 
 			$parameter = $parameters[$m[2]];
 			unset($parameters[$m[2]]);
-			return $m[1] . $parameter;
+			return $m[1] . rawurlencode($parameter);
 		}, $url);
 	}
 

@@ -16,7 +16,7 @@ class TestApi extends Milo\Github\Api
 }
 
 
-# substituteUrl()
+# URL parameters like :name
 test(function() {
 	$api = new TestApi;
 
@@ -49,4 +49,17 @@ test(function() {
 		$params = ['a' => 'A', 'b' => 'B'];
 		$api->substituteUrlParameters($url, $params);
 	}, 'Milo\Github\MissingParameterException', "Missing parameter 'a:b' for URL path ':a:b'.");
+});
+
+
+# URL parameters like :name with special chars as value
+test(function() {
+	$api = new TestApi;
+
+	$url = '/:name';
+	$params = ['name' => 'with space'];
+	$api->substituteUrlParameters($url, $params);
+
+	Assert::same('/with%20space', $url);
+	Assert::same([], $params);
 });
