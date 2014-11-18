@@ -9,7 +9,6 @@ require __DIR__ . '/../bootstrap.php';
 
 class MockIClient implements Milo\Github\Http\IClient
 {
-	/** @return Milo\Github\Http\Response */
 	public function request(Milo\Github\Http\Request $request)
 	{
 		throw new \LogicException;
@@ -19,20 +18,11 @@ class MockIClient implements Milo\Github\Http\IClient
 	public function onResponse($cb) {}
 }
 
-class TestApi extends Milo\Github\Api
-{
-	public function substituteUrlParameters(& $url, array & $parameters)
-	{
-		return parent::substituteUrlParameters($url, $parameters);
-	}
-}
-
-
 
 # Basics
 test(function() {
 	$client = new MockIClient;
-	$api = new TestApi($client);
+	$api = new Milo\Github\Api($client);
 
 	Assert::same($client, $api->getClient());
 	Assert::same('https://api.github.com', $api->getUrl());
@@ -48,47 +38,10 @@ test(function() {
 });
 
 
-# substituteUrl()
-test(function() {
-	$client = new MockIClient;
-	$api = new TestApi($client);
-
-	$urls = [
-		''      => ['',     ['a' => 'A', 'b' => 'B']],
-		'/'     => ['/',    ['a' => 'A', 'b' => 'B']],
-		':a'    => ['A',    ['b' => 'B']],
-		'/:a'   => ['/A',   ['b' => 'B']],
-		':a/'   => ['A/',   ['b' => 'B']],
-		'/:a/'  => ['/A/',  ['b' => 'B']],
-		'/:a/:b/c' => ['/A/B/c', []],
-	];
-
-	foreach ($urls as $url => $result) {
-		$params = ['a' => 'A', 'b' => 'B'];
-		$api->substituteUrlParameters($url, $params);
-
-		Assert::same($url, $result[0]);
-		Assert::same($params, $result[1]);
-	}
-
-	Assert::exception(function() use ($api) {
-		$url = ':a';
-		$params = ['A' => 'a'];
-		$api->substituteUrlParameters($url, $params);
-	}, 'Milo\Github\MissingParameterException', "Missing parameter 'a' for URL path ':a'.");
-
-	Assert::exception(function() use ($api) {
-		$url = ':a:b';
-		$params = ['a' => 'A', 'b' => 'B'];
-		$api->substituteUrlParameters($url, $params);
-	}, 'Milo\Github\MissingParameterException', "Missing parameter 'a:b' for URL path ':a:b'.");
-});
-
-
 # createRequest()
 test(function() {
 	$client = new MockIClient;
-	$api = new TestApi($client);
+	$api = new Milo\Github\Api($client);
 
 	# All slashes in URL
 	$api->setUrl('url://test/');
@@ -117,7 +70,7 @@ test(function() {
 # Default parameters
 test(function() {
 	$client = new MockIClient;
-	$api = new TestApi($client);
+	$api = new Milo\Github\Api($client);
 	$api->setUrl('url://test');
 
 	Assert::same([], $api->getDefaultParameters());
@@ -140,7 +93,7 @@ test(function() {
 # Paginator
 test(function() {
 	$client = new MockIClient;
-	$api = new TestApi($client);
+	$api = new Milo\Github\Api($client);
 
 	Assert::type('Milo\Github\Paginator', $api->paginator(''));
 });
