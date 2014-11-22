@@ -90,6 +90,23 @@ test(function() {
 });
 
 
+# Api called with full URL
+test(function() {
+	$client = new MockIClient;
+	$api = new Milo\Github\Api($client);
+	$api->setUrl('url://test');
+
+	$request = $api->createRequest('', 'url://test/path', [], [], NULL);
+	Assert::same('url://test/path', $request->getUrl());
+
+	$request = $api->createRequest('', 'url://tested/path', [], [], NULL);
+	Assert::same('url://test/ed/path', $request->getUrl());
+
+	$request = $api->createRequest('', 'uRl://TeSt/path', [], [], NULL);
+	Assert::same('url://test/path', $request->getUrl());
+});
+
+
 # Paginator
 test(function() {
 	$client = new MockIClient;

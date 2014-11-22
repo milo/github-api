@@ -216,6 +216,10 @@ class Api extends Sanity
 	 */
 	public function createRequest($method, $urlPath, array $parameters = [], array $headers = [], $content = NULL)
 	{
+		if (stripos($urlPath, $this->url) === 0) {
+			$urlPath = substr($urlPath, strlen($this->url));
+		}
+
 		$urlPath = $this->expandColonParameters($urlPath, $parameters, $this->defaultParameters);
 
 		$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
