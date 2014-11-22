@@ -216,13 +216,9 @@ class Api extends Sanity
 	 */
 	public function createRequest($method, $urlPath, array $parameters = [], array $headers = [], $content = NULL)
 	{
-		$parameters += $this->defaultParameters;
-		$this->substituteUrlParameters($urlPath, $parameters);
+		$urlPath = $this->expandColonParameters($urlPath, $parameters, $this->defaultParameters);
 
-		$url = rtrim($this->url, '/') . '/' . trim($urlPath, '/');
-		if (count($parameters)) {
-			$url .= '?' . http_build_query($parameters);
-		}
+		$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
 
 		if ($content !== NULL && (is_array($content) || is_object($content))) {
 			$headers['Content-Type'] = 'application/json; charset=utf-8';
@@ -339,21 +335,30 @@ class Api extends Sanity
 
 	/**
 	 * @param  string
-	 * @param  array
+	 * @return string
 	 *
 	 * @throws MissingParameterException
 	 */
-	protected function substituteUrlParameters(& $url, array & $parameters)
+	protected function expandColonParameters($url, array $parameters, array $defaultParameters)
 	{
+		$parameters += $defaultParameters;
+
 		$url = preg_replace_callback('#(^|/):([^/]+)#', function($m) use ($url, & $parameters) {
 			if (!isset($parameters[$m[2]])) {
 				throw new MissingParameterException("Missing parameter '$m[2]' for URL path '$url'.");
 			}
-
 			$parameter = $parameters[$m[2]];
 			unset($parameters[$m[2]]);
 			return $m[1] . rawurlencode($parameter);
 		}, $url);
+
+		$url = rtrim($url, '/');
+
+		if (count($parameters)) {
+			$url .= '?' . http_build_query($parameters);
+		}
+
+		return $url;
 	}
 
 }
