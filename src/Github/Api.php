@@ -220,7 +220,11 @@ class Api extends Sanity
 			$urlPath = substr($urlPath, strlen($this->url));
 		}
 
-		$urlPath = $this->expandColonParameters($urlPath, $parameters, $this->defaultParameters);
+		if (strpos($urlPath, '{') === FALSE) {
+			$urlPath = $this->expandColonParameters($urlPath, $parameters, $this->defaultParameters);
+		} else {
+			$urlPath = $this->expandUriTemplate($urlPath, $parameters, $this->defaultParameters);
+		}
 
 		$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
 
@@ -363,6 +367,183 @@ class Api extends Sanity
 		}
 
 		return $url;
+	}
+
+
+	/**
+	 * Expands URI template (RFC 6570).
+	 *
+	 * @see http://tools.ietf.org/html/rfc6570
+	 * @todo Inject remaining default parameters into query string?
+	 *
+	 * @param  string
+	 * @return string
+	 */
+	protected function expandUriTemplate($url, array $parameters, array $defaultParameters)
+	{
+		$parameters += $defaultParameters;
+
+		static $operatorFlags = [
+			''  => ['prefix' => '',  'separator' => ',', 'named' => FALSE, 'ifEmpty' => '',  'reserved' => FALSE],
+			'+' => ['prefix' => '',  'separator' => ',', 'named' => FALSE, 'ifEmpty' => '',  'reserved' => TRUE],
+			'#' => ['prefix' => '#', 'separator' => ',', 'named' => FALSE, 'ifEmpty' => '',  'reserved' => TRUE],
+			'.' => ['prefix' => '.', 'separator' => '.', 'named' => FALSE, 'ifEmpty' => '',  'reserved' => FALSE],
+			'/' => ['prefix' => '/', 'separator' => '/', 'named' => FALSE, 'ifEmpty' => '',  'reserved' => FALSE],
+			';' => ['prefix' => ';', 'separator' => ';', 'named' => TRUE,  'ifEmpty' => '',  'reserved' => FALSE],
+			'?' => ['prefix' => '?', 'separator' => '&', 'named' => TRUE,  'ifEmpty' => '=', 'reserved' => FALSE],
+			'&' => ['prefix' => '&', 'separator' => '&', 'named' => TRUE,  'ifEmpty' => '=', 'reserved' => FALSE],
+		];
+
+		return preg_replace_callback('~{([+#./;?&])?([^}]+?)}~', function($m) use ($url, & $parameters, $operatorFlags) {
+			$flags = $operatorFlags[$m[1]];
+
+			$translated = [];
+			foreach (explode(',', $m[2]) as $name) {
+				$explode = FALSE;
+				$maxLength = NULL;
+				if (preg_match('~^(.+)(?:(\*)|:(\d+))$~', $name, $tmp)) { // TODO: Speed up?
+					$name = $tmp[1];
+					if (isset($tmp[3])) {
+						$maxLength = (int) $tmp[3];
+					} else {
+						$explode = TRUE;
+					}
+				}
+
+				if (!isset($parameters[$name])) {  // TODO: Throw exception?
+					continue;
+				}
+
+				$value = $parameters[$name];
+				if (is_scalar($value)) {
+					$translated[] = $this->prefix($flags, $name, $this->escape($flags, $value, $maxLength));
+
+				} else {
+					$value = (array) $value;
+					$isAssoc = key($value) !== 0;
+
+					// The '*' (explode) modifier
+					if ($explode) {
+						$parts = [];
+						if ($isAssoc) {
+							$this->walk($value, function ($v, $k) use (& $parts, $flags, $maxLength) {
+								$parts[] = $this->prefix(['named' => TRUE] + $flags, $k, $this->escape($flags, $v, $maxLength));
+							});
+
+						} elseif ($flags['named']) {
+							$this->walk($value, function ($v) use (& $parts, $flags, $name, $maxLength) {
+								$parts[] = $this->prefix($flags, $name, $this->escape($flags, $v, $maxLength));
+							});
+
+						} else {
+							$this->walk($value, function ($v) use (& $parts, $flags, $maxLength) {
+								$parts[] = $this->escape($flags, $v, $maxLength);
+							});
+						}
+
+						if (isset($parts[0])) {
+							if ($flags['named']) {
+								$translated[] = implode($flags['separator'], $parts);
+							} else {
+								$translated[] = $this->prefix($flags, $name, implode($flags['separator'], $parts));
+							}
+						}
+
+					} else {
+						$parts = [];
+						$this->walk($value, function($v, $k) use (& $parts, $isAssoc, $flags, $maxLength) {
+							if ($isAssoc) {
+								$parts[] = $this->escape($flags, $k);
+							}
+
+							$parts[] = $this->escape($flags, $v, $maxLength);
+						});
+
+						if (isset($parts[0])) {
+							$translated[] = $this->prefix($flags, $name, implode(',', $parts));
+						}
+					}
+				}
+			}
+
+			if (isset($translated[0])) {
+				return $flags['prefix'] . implode($flags['separator'], $translated);
+			}
+
+			return '';
+		}, $url);
+	}
+
+
+	/**
+	 * @param  array
+	 * @param  string
+	 * @param  string  already escaped
+	 * @return string
+	 */
+	private function prefix(array $flags, $name, $value)
+	{
+		$prefix = '';
+		if ($flags['named']) {
+			$prefix .= $this->escape($flags, $name);
+			if (isset($value[0])) {
+				$prefix .= '=';
+			} else {
+				$prefix .= $flags['ifEmpty'];
+			}
+		}
+
+		return $prefix . $value;
+	}
+
+
+	/**
+	 * @param  array
+	 * @param  mixed
+	 * @param  int|NULL
+	 * @return string
+	 */
+	private function escape(array $flags, $value, $maxLength = NULL)
+	{
+		$value = (string) $value;
+
+		if ($maxLength !== NULL) {
+			if (preg_match('~^(.{' . $maxLength . '}).~u', $value, $m)) {
+				$value = $m[1];
+			} elseif (strlen($value) > $maxLength) {  # when malformed UTF-8
+				$value = substr($value, 0, $maxLength);
+			}
+		}
+
+		if ($flags['reserved']) {
+			$parts = preg_split('~(%[0-9a-fA-F]{2}|[:/?#[\]@!$&\'()*+,;=])~', $value, -1, PREG_SPLIT_DELIM_CAPTURE);
+			$parts[] = '';
+
+			$escaped = '';
+			for ($i = 0, $count = count($parts); $i < $count; $i += 2) {
+				$escaped .= rawurlencode($parts[$i]) . $parts[$i + 1];
+			}
+
+			return $escaped;
+		}
+
+		return rawurlencode($value);
+	}
+
+
+	/**
+	 * @param  array
+	 * @param  callable
+	 */
+	private function walk(array $array, $cb)
+	{
+		foreach ($array as $k => $v) {
+			if ($v === NULL) {
+				continue;
+			}
+
+			$cb($v, $k);
+		}
 	}
 
 }
