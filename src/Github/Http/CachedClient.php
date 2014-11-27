@@ -75,10 +75,10 @@ class CachedClient extends Github\Sanity implements IClient
 			}
 
 			/** @var $cached Response */
-			if ($cached->hasHeader('ETag')) {
-				$request->addHeader('If-None-Match', $cached->getHeader('ETag'));
-			} elseif ($cached->hasHeader('Last-Modified')) {
+			if ($cached->hasHeader('Last-Modified')) {
 				$request->addHeader('If-Modified-Since', $cached->getHeader('Last-Modified'));
+			} elseif ($cached->hasHeader('ETag')) {
+				$request->addHeader('If-None-Match', $cached->getHeader('ETag'));
 			}
 		}
 

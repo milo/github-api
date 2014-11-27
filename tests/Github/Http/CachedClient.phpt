@@ -184,6 +184,35 @@ class CachingTestCase extends Tester\TestCase
 	}
 
 
+	public function testPreferIfModifiedAgainstETag()
+	{
+		$this->innerClient->onRequest = function (Http\Request $request) {
+			Assert::false($request->hasHeader('If-None-Match'));
+			Assert::false($request->hasHeader('If-Modified-Since'));
+
+			return new Http\Response(200, ['Last-Modified' => 'today', 'ETag' => 'e-tag'], "response-{$request->getContent()}");
+		};
+
+		$response = $this->client->request(new Http\Request('', '', [], '1'));
+		Assert::same('response-1', $response->getContent());
+		Assert::same(1, $this->innerClient->requestCount);
+
+
+		$this->innerClient->onRequest = function (Http\Request $request) {
+			Assert::false($request->hasHeader('ETag'));
+			Assert::same('today', $request->getHeader('If-Modified-Since'));
+
+			return new Http\Response(304, [], "response-{$request->getContent()}");
+		};
+
+		$response = $this->client->request(new Http\Request('', '', [], '2'));
+		Assert::same('response-1', $response->getContent());
+		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::same(304, $response->getPrevious()->getCode());
+		Assert::same(2, $this->innerClient->requestCount);
+	}
+
+
 	public function testRepeatedRequest()
 	{
 		$request = new Http\Request('', '', [], 'same');
