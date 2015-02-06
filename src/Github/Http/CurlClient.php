@@ -78,7 +78,7 @@ class CurlClient extends AbstractClient
 					# The HTTP/x.y may occur multiple times with proxy (HTTP/1.1 200 Connection Established)
 					$responseHeaders = [];
 
-				} elseif ($line !== "\r\n") {
+				} elseif (strpos($line,':')!==false) {
 					list($name, $value) = explode(':', $line, 2);
 					$responseHeaders[trim($name)] = trim($value);
 				}
