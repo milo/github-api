@@ -1,6 +1,7 @@
 [Github API](https://developer.github.com/v3/) easy access library. Works with cURL, stream or any of your HTTP client.
 
-[![Build Status](https://travis-ci.org/milo/github-api.png?branch=master)](https://travis-ci.org/milo/github-api)
+[![Build Status](https://travis-ci.org/milo/github-api.svg?branch=master)](https://travis-ci.org/milo/github-api)
+[![Downloads last 30 days](https://img.shields.io/packagist/dm/milo/github-api.svg)](https://packagist.org/packages/milo/github-api)
 
 
 # Installation
