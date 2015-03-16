@@ -264,25 +264,22 @@ class Api extends Sanity
 			/** @var $content \stdClass */
 			switch ($code) {
 				case Http\Response::S400_BAD_REQUEST:
-					throw new BadRequestException($content->message, $code, NULL, $response);
+					throw new BadRequestException(self::errorMessage($content), $code, NULL, $response);
 
 				case Http\Response::S401_UNAUTHORIZED:
-					throw new UnauthorizedException($content->message, $code, NULL, $response);
+					throw new UnauthorizedException(self::errorMessage($content), $code, NULL, $response);
 
 				case Http\Response::S403_FORBIDDEN:
 					if ($response->getHeader('X-RateLimit-Remaining') === '0') {
-						throw new RateLimitExceedException($content->message, $code, NULL, $response);
+						throw new RateLimitExceedException(self::errorMessage($content), $code, NULL, $response);
 					}
-					throw new ForbiddenException($content->message, $code, NULL, $response);
+					throw new ForbiddenException(self::errorMessage($content), $code, NULL, $response);
 
 				case Http\Response::S404_NOT_FOUND:
 					throw new NotFoundException('Resource not found or not authorized to access.', $code, NULL, $response);
 
 				case Http\Response::S422_UNPROCESSABLE_ENTITY:
-					$message = $content->message . implode(', ', array_map(function($error) {
-						return '[' . implode(':', (array) $error) . ']';
-					}, $content->errors));
-					throw new UnprocessableEntityException($message, $code, NULL, $response);
+					throw new UnprocessableEntityException(self::errorMessage($content), $code, NULL, $response);
 			}
 
 			$message = $okCodes === NULL ? '< 300' : implode(' or ', $okCodes);
@@ -544,6 +541,26 @@ class Api extends Sanity
 
 			$cb($v, $k);
 		}
+	}
+
+
+	/**
+	 * @param  \stdClass
+	 * @return string
+	 */
+	private static function errorMessage($content)
+	{
+		$message = isset($content->message)
+			? $content->message
+			: 'Unknown error';
+
+		if (isset($content->errors)) {
+			$message .= implode(', ', array_map(function($error) {
+				return '[' . implode(':', (array) $error) . ']';
+			}, $content->errors));
+		}
+
+		return $message;
 	}
 
 }

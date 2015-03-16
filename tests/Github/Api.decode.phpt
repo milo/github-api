@@ -73,6 +73,13 @@ Assert::null($e->getPrevious());
 
 
 $e = Assert::exception(function() use ($api) {
+	$response = new Milo\Github\Http\Response(422, ['Content-Type' => 'application/json'], '{"message":"error"}');
+	$api->decode($response);
+}, 'Milo\Github\UnprocessableEntityException', 'error', 422);
+Assert::null($e->getPrevious());
+
+
+$e = Assert::exception(function() use ($api) {
 	$response = new Milo\Github\Http\Response(422, ['Content-Type' => 'application/json'], '{"message":"error", "errors":[{"a":"b","c":"d"}]}');
 	$api->decode($response);
 }, 'Milo\Github\UnprocessableEntityException', 'error[b:d]', 422);
