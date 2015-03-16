@@ -279,9 +279,16 @@ class Api extends Sanity
 					throw new NotFoundException('Resource not found or not authorized to access.', $code, NULL, $response);
 
 				case Http\Response::S422_UNPROCESSABLE_ENTITY:
-					$message = $content->message . implode(', ', array_map(function($error) {
-						return '[' . implode(':', (array) $error) . ']';
-					}, $content->errors));
+          if ( ! empty($content->errors) )
+          {
+					  $message = $content->message . implode(', ', array_map(function($error) {
+						  return '[' . implode(':', (array) $error) . ']';
+					  }, $content->errors));
+          }
+          else {
+            $message = $content->message;
+          }
+
 					throw new UnprocessableEntityException($message, $code, NULL, $response);
 			}
 
