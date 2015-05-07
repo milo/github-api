@@ -1,4 +1,4 @@
-#-----------------------------------
+#
 # DigiCert High Assurance EV Root CA
 #
 -----BEGIN CERTIFICATE-----
@@ -26,7 +26,7 @@ vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep
 -----END CERTIFICATE-----
 
 
-#---------------------------------------
+#
 # DigiCert SHA2 High Assurance Server CA
 #
 -----BEGIN CERTIFICATE-----
