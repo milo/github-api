@@ -122,7 +122,7 @@ class Login extends Github\Sanity
 		}
 
 		$token = new Token($json->access_token, $json->token_type, strlen($json->scope) ? explode(',', $json->scope) : []);
-		$this->storage->set('auth.token', $token);
+		$this->storage->set('auth.token', $token->toArray());
 		$this->storage->remove('auth.state');
 
 		return $token;
@@ -148,9 +148,14 @@ class Login extends Github\Sanity
 		$token = $this->storage->get('auth.token');
 		if ($token === NULL) {
 			throw new Github\LogicException('Token has not been obtained yet.');
+
+		} elseif ($token instanceof Token) {
+			/** @deprecated */
+			$token = $token->toArray();
+			$this->storage->set('auth.token', $token);
 		}
 
-		return $token;
+		return Token::createFromArray($token);
 	}
 
 

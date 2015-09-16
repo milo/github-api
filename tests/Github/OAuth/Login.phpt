@@ -170,6 +170,21 @@ class LoginTestCase extends Tester\TestCase
 		Assert::null($e->getPrevious());
 	}
 
+
+	/** @deprecated */
+	public function testTokenObjectInSession()
+	{
+		$token = new Milo\Github\OAuth\Token('a', 'b', ['c', 'd']);
+		$this->storage->set('auth.token', $token);
+
+		Assert::type('Milo\Github\OAuth\Token', $this->login->getToken());
+		Assert::same([
+			'value' => 'a',
+			'type' => 'b',
+			'scopes' => ['c', 'd'],
+		], $this->storage->get('auth.token'));
+	}
+
 }
 
 (new LoginTestCase())->run();

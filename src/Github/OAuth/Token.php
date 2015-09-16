@@ -87,4 +87,22 @@ class Token extends Github\Sanity
 		return FALSE;
 	}
 
+
+	/** @internal */
+	public function toArray()
+	{
+		return [
+			'value' => $this->value,
+			'type' => $this->type,
+			'scopes' => $this->scopes,
+		];
+	}
+
+
+	/** @internal */
+	public static function createFromArray(array $data)
+	{
+		return new static($data['value'], $data['type'], $data['scopes']);
+	}
+
 }

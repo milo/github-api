@@ -23,3 +23,13 @@ Assert::true($token->hasScope('user'));
 Assert::true($token->hasScope('user:email'));
 Assert::false($token->hasScope('user:foo'));
 Assert::false($token->hasScope('foo'));
+
+$asArray = [
+	'value' => 'hash2',
+	'type' => 'type',
+	'scopes' => ['user'],
+];
+Assert::same($asArray, $token->toArray());
+
+$fromArray = Milo\Github\OAuth\Token::createFromArray($asArray);
+Assert::equal($token, $fromArray);
