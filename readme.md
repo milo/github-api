@@ -13,6 +13,7 @@ composer require milo/github-api
 
 # Documentation
 Everything at [wiki pages](https://github.com/milo/github-api/wiki), including the [short classes description](https://github.com/milo/github-api/wiki/Classes-description).
+Whole API documentation is hosted on [Codedoc](https://codedoc.pub/milo/github-api/master/index.html).
 
 
 Quick Start
