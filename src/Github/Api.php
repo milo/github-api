@@ -225,8 +225,12 @@ class Api extends Sanity
 		} else {
 			$urlPath = $this->expandUriTemplate($urlPath, $parameters, $this->defaultParameters);
 		}
-
-		$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
+		
+		//Prepend API URL only if has not been provided. Allows user to provide absolute URLs for upload.
+		if(stripos($urlPath,"https://") === false)
+			$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
+		else
+			$url = $urlPath;
 
 		if ($content !== NULL && (is_array($content) || is_object($content))) {
 			$headers['Content-Type'] = 'application/json; charset=utf-8';
