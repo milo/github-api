@@ -12,11 +12,8 @@ matrix:
         - php: hhvm
 
 before_script:
-    # Update composer
-    - composer self-update
-
     # Install Nette Tester
-    - composer install --no-interaction --dev --prefer-source
+    - composer install --no-interaction --prefer-source
 
 script: vendor/bin/tester -p php -s tests
 
