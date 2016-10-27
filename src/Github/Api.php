@@ -216,8 +216,16 @@ class Api extends Sanity
 	 */
 	public function createRequest($method, $urlPath, array $parameters = [], array $headers = [], $content = NULL)
 	{
-		if (stripos($urlPath, $this->url) === 0) {
+		if (stripos($urlPath, $this->url) === 0) {  # Allows non-HTTPS URLs
+			$baseUrl = $this->url;
 			$urlPath = substr($urlPath, strlen($this->url));
+
+		} elseif (preg_match('#^(https://[^/]+)(/.*)?$#', $urlPath, $m)) {
+			$baseUrl = $m[1];
+			$urlPath = isset($m[2]) ? $m[2] : '';
+
+		} else {
+			$baseUrl = $this->url;
 		}
 
 		if (strpos($urlPath, '{') === FALSE) {
@@ -226,7 +234,7 @@ class Api extends Sanity
 			$urlPath = $this->expandUriTemplate($urlPath, $parameters, $this->defaultParameters);
 		}
 
-		$url = rtrim($this->url, '/') . '/' . ltrim($urlPath, '/');
+		$url = rtrim($baseUrl, '/') . '/' . ltrim($urlPath, '/');
 
 		if ($content !== NULL && (is_array($content) || is_object($content))) {
 			$headers['Content-Type'] = 'application/json; charset=utf-8';

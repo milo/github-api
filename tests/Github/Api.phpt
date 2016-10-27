@@ -67,7 +67,7 @@ test(function() {
 	Assert::same(['content-type' => 'application/json; charset=utf-8'], $request->getHeaders());
 	Assert::same('{"foo":"bar"}', $request->getContent());
 
-	## Object to JSON
+	# Object to JSON
 	$request = $api->createRequest('', '', [], [], (object) ['foo' => 'bar']);
 	Assert::same(['content-type' => 'application/json; charset=utf-8'], $request->getHeaders());
 	Assert::same('{"foo":"bar"}', $request->getContent());
@@ -97,7 +97,7 @@ test(function() {
 });
 
 
-# Api called with full URL
+# Api called with absolute URL
 test(function() {
 	$client = new MockIClient;
 	$api = new Milo\Github\Api($client);
@@ -111,6 +111,16 @@ test(function() {
 
 	$request = $api->createRequest('', 'uRl://TeSt/path', [], [], NULL);
 	Assert::same('url://test/path', $request->getUrl());
+
+	# Absolute HTTPS URL with different host
+	$request = $api->createRequest('', 'https://example.com', [], [], NULL);
+	Assert::same('https://example.com/', $request->getUrl());
+	$request = $api->createRequest('', 'https://example.com/path', [], [], NULL);
+	Assert::same('https://example.com/path', $request->getUrl());
+
+	# Absolute non-HTTPS URL with different host is not allowed (should be?)
+	$request = $api->createRequest('', 'http://example.com', [], [], NULL);
+	Assert::same('url://test/http://example.com', $request->getUrl());
 });
 
 

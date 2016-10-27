@@ -469,3 +469,11 @@ test(function() use ($api) {
 		Assert::same($expected, $api->expandUriTemplate($template, $parameters));
 	}
 });
+
+
+# Expanding in absolute URL
+test(function () {
+	$api = new Milo\Github\Api;
+	$request = $api->createRequest('', 'https://host.{name}.{tld}/path/{name}', ['name' => 'milo', 'tld' => 'cz']);
+	Assert::same('https://host.{name}.{tld}/path/milo', $request->getUrl());
+});

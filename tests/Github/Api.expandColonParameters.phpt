@@ -59,3 +59,11 @@ test(function() {
 	Assert::same('/default', $api->expandColonParameters('/:var', [], ['var' => 'default']));
 	Assert::same('/set', $api->expandColonParameters('/:var', ['var' => 'set'], ['var' => 'default']));
 });
+
+
+# Expanding in absolute URL
+test(function () {
+	$api = new Milo\Github\Api;
+	$request = $api->createRequest('', 'https://host.:name.:tld/path/:name', ['name' => 'milo', 'tld' => 'cz']);
+	Assert::same('https://host.:name.:tld/path/milo?tld=cz', $request->getUrl());
+});
