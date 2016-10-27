@@ -29,12 +29,19 @@ test(function() {
 	Assert::same($api, $api->setUrl('url://test'));
 	Assert::same('url://test', $api->getUrl());
 
+	$clone = $api->withUrl('url://cloned');
+	Assert::notSame($api, $clone);
+	Assert::same('url://test', $api->getUrl());
+	Assert::same('url://cloned', $clone->getUrl());
+	Assert::same($api->getClient(), $clone->getClient());
+
 	$token = new Milo\Github\OAuth\Token('hash');
 	Assert::null($api->getToken());
 	Assert::same($api, $api->setToken($token));
 	Assert::same($token, $api->getToken());
 	$api->setToken(NULL);
 	Assert::null($api->getToken());
+
 });
 
 

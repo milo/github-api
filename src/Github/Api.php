@@ -320,6 +320,18 @@ class Api extends Sanity
 
 	/**
 	 * @param  string
+	 * @return Api
+	 */
+	public function withUrl($url)
+	{
+		$api = clone $this;
+		$api->setUrl($url);
+		return $api;
+	}
+
+
+	/**
+	 * @param  string
 	 * @return self
 	 */
 	public function setUrl($url)
