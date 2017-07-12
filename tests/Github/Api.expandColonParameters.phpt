@@ -28,6 +28,8 @@ test(function() {
 		':a/' => 'A?b=B',
 		'/:a/' => '/A?b=B',
 		'/:a/:b/c' => '/A/B/c',
+		'/:a.:b/c' => '/A.B/c',
+		'/:a...:b/c' => '/A...B/c',
 	];
 
 	foreach ($urls as $url => $expected) {

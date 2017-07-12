@@ -368,7 +368,7 @@ class Api extends Sanity
 	{
 		$parameters += $defaultParameters;
 
-		$url = preg_replace_callback('#(^|/):([^/]+)#', function($m) use ($url, & $parameters) {
+		$url = preg_replace_callback('#(^|/|\.):([^/.]+)#', function($m) use ($url, & $parameters) {
 			if (!isset($parameters[$m[2]])) {
 				throw new MissingParameterException("Missing parameter '$m[2]' for URL path '$url'.");
 			}
