@@ -74,6 +74,26 @@ class Api extends Sanity
 
 
 	/**
+	 * @param  string
+	 * @return self
+	 */
+	public function setDefaultAccept($accept)
+	{
+		$this->defaultAccept = $accept;
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultAccept()
+	{
+		return $this->defaultAccept;
+	}
+
+
+	/**
 	 * @see createRequest()
 	 * @see request()
 	 *
