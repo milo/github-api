@@ -57,6 +57,7 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		$this->request = $this->firstRequest;
@@ -68,6 +69,7 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return $this->request !== NULL && ($this->limit === NULL || $this->counter < $this->limit);
@@ -77,6 +79,7 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * @return Http\Response
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		$this->load();
@@ -87,6 +90,7 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * @return int
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return static::parsePage($this->request->getUrl());
@@ -96,11 +100,12 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		$this->load();
 
-		if ($url = static::parseLink($this->response->getHeader('Link'), 'next')) {
+		if ($url = static::parseLink((string) $this->response->getHeader('Link'), 'next')) {
 			$this->request = new Http\Request(
 				$this->request->getMethod(),
 				$url,
