@@ -73,9 +73,9 @@ class Helpers
 			throw new JsonException('Invalid UTF-8 sequence', 5); // PECL JSON-C
 		}
 
-		$value = json_decode($json, FALSE, 512, (defined('JSON_C_VERSION') && PHP_INT_SIZE > 4) ? 0 : JSON_BIGINT_AS_STRING);
+		$value = json_decode($json, false, 512, (defined('JSON_C_VERSION') && PHP_INT_SIZE > 4) ? 0 : JSON_BIGINT_AS_STRING);
 
-		if ($value === NULL && $json !== '' && strcasecmp($json, 'null')) { // '' does not clear json_last_error()
+		if ($value === null && $json !== '' && strcasecmp($json, 'null')) { // '' does not clear json_last_error()
 			$error = json_last_error();
 			throw new JsonException(isset(static::$jsonMessages[$error]) ? static::$jsonMessages[$error] : 'Unknown error', $error);
 		}
@@ -87,9 +87,9 @@ class Helpers
 	 * @param  bool
 	 * @return Http\IClient
 	 */
-	public static function createDefaultClient($newInstance = FALSE)
+	public static function createDefaultClient($newInstance = false)
 	{
-		if (self::$client === NULL || $newInstance) {
+		if (self::$client === null || $newInstance) {
 			self::$client = extension_loaded('curl')
 				? new Http\CurlClient
 				: new Http\StreamClient;
@@ -97,5 +97,4 @@ class Helpers
 
 		return self::$client;
 	}
-
 }

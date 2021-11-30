@@ -15,15 +15,15 @@ abstract class Message extends Github\Sanity
 	/** @var array[name => value] */
 	private $headers = [];
 
-	/** @var string|NULL */
+	/** @var string|null */
 	private $content;
 
 
 	/**
 	 * @param  array
-	 * @param  string|NULL
+	 * @param  string|null
 	 */
-	public function __construct(array $headers = [], $content = NULL)
+	public function __construct(array $headers = [], $content = null)
 	{
 		$this->headers = array_change_key_case($headers, CASE_LOWER);
 		$this->content = $content;
@@ -45,7 +45,7 @@ abstract class Message extends Github\Sanity
 	 * @param  mixed
 	 * @return mixed
 	 */
-	public function getHeader($name, $default = NULL)
+	public function getHeader($name, $default = null)
 	{
 		$name = strtolower($name);
 		return array_key_exists($name, $this->headers)
@@ -62,7 +62,7 @@ abstract class Message extends Github\Sanity
 	protected function addHeader($name, $value)
 	{
 		$name = strtolower($name);
-		if (!array_key_exists($name, $this->headers) && $value !== NULL) {
+		if (!array_key_exists($name, $this->headers) && $value !== null) {
 			$this->headers[$name] = $value;
 		}
 
@@ -72,13 +72,13 @@ abstract class Message extends Github\Sanity
 
 	/**
 	 * @param  string
-	 * @param  string|NULL
+	 * @param  string|null
 	 * @return self
 	 */
 	protected function setHeader($name, $value)
 	{
 		$name = strtolower($name);
-		if ($value === NULL) {
+		if ($value === null) {
 			unset($this->headers[$name]);
 		} else {
 			$this->headers[$name] = $value;
@@ -98,11 +98,10 @@ abstract class Message extends Github\Sanity
 
 
 	/**
-	 * @return string|NULL
+	 * @return string|null
 	 */
 	public function getContent()
 	{
 		return $this->content;
 	}
-
 }

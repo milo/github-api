@@ -30,7 +30,7 @@ class FileCache extends Github\Sanity implements ICache
 		$dir = $tempDir . DIRECTORY_SEPARATOR . 'milo.github-api';
 
 		if (!is_dir($dir)) {
-			set_error_handler(function($severity, $message, $file, $line) use ($dir, & $valid) {
+			set_error_handler(function($severity, $message, $file, $line) use ($dir, &$valid) {
 				restore_error_handler();
 				if (!is_dir($dir)) {
 					throw new MissingDirectoryException("Cannot create '$dir' directory.", 0, new \ErrorException($message, 0, $severity, $file, $line));
@@ -63,7 +63,7 @@ class FileCache extends Github\Sanity implements ICache
 
 	/**
 	 * @param  string
-	 * @return mixed|NULL
+	 * @return mixed|null
 	 */
 	public function load($key)
 	{
@@ -73,8 +73,8 @@ class FileCache extends Github\Sanity implements ICache
 			flock($fd, LOCK_UN);
 			fclose($fd);
 
-			$success = TRUE;
-			set_error_handler(function() use (& $success) { return $success = FALSE; }, E_NOTICE);
+			$success = true;
+			set_error_handler(function() use (&$success) { return $success = false; }, E_NOTICE);
 			$cached = unserialize($cached);
 			restore_error_handler();
 
@@ -93,5 +93,4 @@ class FileCache extends Github\Sanity implements ICache
 	{
 		return $this->dir . DIRECTORY_SEPARATOR . sha1($key) . '.php';
 	}
-
 }

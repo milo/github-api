@@ -28,5 +28,4 @@ interface ISessionStorage
 	 * @return self
 	 */
 	function remove($name);
-
 }

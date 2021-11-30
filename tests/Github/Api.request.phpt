@@ -49,7 +49,7 @@ $api->request($request);
 
 
 # Without token again
-$api->setToken(NULL);
+$api->setToken(null);
 $client->onRequest = function(Milo\Github\Http\Request $request) {
 	Assert::false($request->hasHeader('Authorization'));
 };

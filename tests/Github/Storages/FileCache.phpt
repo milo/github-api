@@ -22,13 +22,13 @@ $cache = new Milo\Github\Storages\FileCache(TEMP_DIR);
 
 Assert::null($cache->load('undefined'));
 
-$value = $cache->save('key-1', NULL);
+$value = $cache->save('key-1', null);
 Assert::null($cache->load('key-1'));
 
-$value = $cache->save('key-2', TRUE);
+$value = $cache->save('key-2', true);
 Assert::true($cache->load('key-2'));
 
-$value = $cache->save('key-3', FALSE);
+$value = $cache->save('key-3', false);
 Assert::false($cache->load('key-3'));
 
 $value = $cache->save('key-4', []);

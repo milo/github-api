@@ -33,9 +33,9 @@ class Request extends Message
 	 * @param  string
 	 * @param  string
 	 * @param  array
-	 * @param  string|NULL
+	 * @param  string|null
 	 */
-	public function __construct($method, $url, array $headers = [], $content = NULL)
+	public function __construct($method, $url, array $headers = [], $content = null)
 	{
 		$this->method = $method;
 		$this->url = $url;
@@ -84,12 +84,11 @@ class Request extends Message
 
 	/**
 	 * @param  string
-	 * @param  string|NULL
+	 * @param  string|null
 	 * @return self
 	 */
 	public function setHeader($name, $value)
 	{
 		return parent::setHeader($name, $value);
 	}
-
 }

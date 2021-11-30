@@ -70,8 +70,8 @@ class Token extends Github\Sanity
 	 */
 	public function hasScope($scope)
 	{
-		if (in_array($scope, $this->scopes, TRUE)) {
-			return TRUE;
+		if (in_array($scope, $this->scopes, true)) {
+			return true;
 		}
 
 		static $superiors = [
@@ -80,11 +80,11 @@ class Token extends Github\Sanity
 			'notifications' => 'repo',
 		];
 
-		if (array_key_exists($scope, $superiors) && in_array($superiors[$scope], $this->scopes, TRUE)) {
-			return TRUE;
+		if (array_key_exists($scope, $superiors) && in_array($superiors[$scope], $this->scopes, true)) {
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 

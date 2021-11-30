@@ -16,15 +16,14 @@ interface IClient
 	function request(Request $request);
 
 	/**
-	 * @param  callable|NULL
+	 * @param  callable|null
 	 * @return self
 	 */
 	function onRequest($callback);
 
 	/**
-	 * @param  callable|NULL
+	 * @param  callable|null
 	 * @return self
 	 */
 	function onResponse($callback);
-
 }

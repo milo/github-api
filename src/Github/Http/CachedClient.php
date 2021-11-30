@@ -13,7 +13,7 @@ use Milo\Github\Storages;
  */
 class CachedClient extends Github\Sanity implements IClient
 {
-	/** @var Storages\ICache|NULL */
+	/** @var Storages\ICache|null */
 	private $cache;
 
 	/** @var IClient */
@@ -22,7 +22,7 @@ class CachedClient extends Github\Sanity implements IClient
 	/** @var bool */
 	private $forbidRecheck;
 
-	/** @var callable|NULL */
+	/** @var callable|null */
 	private $onResponse;
 
 
@@ -31,7 +31,7 @@ class CachedClient extends Github\Sanity implements IClient
 	 * @param IClient
 	 * @param bool  forbid checking Github for new data; more or less development purpose only
 	 */
-	public function __construct(Storages\ICache $cache, IClient $client = NULL, $forbidRecheck = FALSE)
+	public function __construct(Storages\ICache $cache, IClient $client = null, $forbidRecheck = false)
 	{
 		$this->cache = $cache;
 		$this->client = $client ?: Github\Helpers::createDefaultClient();
@@ -103,7 +103,7 @@ class CachedClient extends Github\Sanity implements IClient
 
 
 	/**
-	 * @param  callable|NULL function(Request $request)
+	 * @param  callable|null function(Request $request)
 	 * @return self
 	 */
 	public function onRequest($callback)
@@ -114,12 +114,12 @@ class CachedClient extends Github\Sanity implements IClient
 
 
 	/**
-	 * @param  callable|NULL function(Response $response)
+	 * @param  callable|null function(Response $response)
 	 * @return self
 	 */
 	public function onResponse($callback)
 	{
-		$this->client->onResponse(NULL);
+		$this->client->onResponse(null);
 		$this->onResponse = $callback;
 		return $this;
 	}
@@ -132,12 +132,11 @@ class CachedClient extends Github\Sanity implements IClient
 	{
 		/** @todo Do it properly. Vary:, Pragma:, TTL...  */
 		if (!$response->isCode(200)) {
-			return FALSE;
+			return false;
 		} elseif (preg_match('#max-age=0|must-revalidate#i', $response->getHeader('Cache-Control', ''))) {
-			return FALSE;
+			return false;
 		}
 
 		return $response->hasHeader('ETag') || $response->hasHeader('Last-Modified');
 	}
-
 }

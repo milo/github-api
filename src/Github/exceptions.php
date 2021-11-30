@@ -44,7 +44,7 @@ namespace Milo\Github {
 	 */
 	abstract class ApiException extends RuntimeException
 	{
-		/** @var Http\Response|NULL */
+		/** @var Http\Response|null */
 		private $response;
 
 
@@ -52,7 +52,7 @@ namespace Milo\Github {
 		 * @param string
 		 * @param int
 		 */
-		public function __construct($message = '', $code = 0, \Exception $previous = NULL, Http\Response $response = NULL)
+		public function __construct($message = '', $code = 0, \Exception $previous = null, Http\Response $response = null)
 		{
 			parent::__construct($message, $code, $previous);
 			$this->response = clone $response;
@@ -60,13 +60,12 @@ namespace Milo\Github {
 
 
 		/**
-		 * @return Http\Response|NULL
+		 * @return Http\Response|null
 		 */
 		final public function getResponse()
 		{
 			return $this->response;
 		}
-
 	}
 
 
@@ -133,9 +132,7 @@ namespace Milo\Github {
 	 * JSON cannot be decoded, or value cannot be encoded to JSON.
 	 */
 	class JsonException extends RuntimeException
-	{
-	}
-
+	{}
 }
 
 
@@ -148,7 +145,6 @@ namespace Milo\Github\Http {
 	 */
 	class BadResponseException extends Github\RuntimeException
 	{}
-
 }
 
 
@@ -160,7 +156,6 @@ namespace Milo\Github\OAuth {
 	 */
 	class LoginException extends Github\RuntimeException
 	{}
-
 }
 
 
@@ -172,5 +167,4 @@ namespace Milo\Github\Storages {
 	 */
 	class MissingDirectoryException extends Github\RuntimeException
 	{}
-
 }

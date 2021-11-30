@@ -22,10 +22,10 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 	/** @var int  maximum redirects per request*/
 	public $maxRedirects = 5;
 
-	/** @var callable|NULL */
+	/** @var callable|null */
 	private $onRequest;
 
-	/** @var callable|NULL */
+	/** @var callable|null */
 	private $onResponse;
 
 
@@ -41,7 +41,7 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 		$request = clone $request;
 
 		$counter = $this->maxRedirects;
-		$previous = NULL;
+		$previous = null;
 		do {
 			$this->setupRequest($request);
 
@@ -65,14 +65,14 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 			}
 			break;
 
-		} while (TRUE);
+		} while (true);
 
 		return $response;
 	}
 
 
 	/**
-	 * @param  callable|NULL function(Request $request)
+	 * @param  callable|null function(Request $request)
 	 * @return self
 	 */
 	public function onRequest($callback)
@@ -83,7 +83,7 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 
 
 	/**
-	 * @param  callable|NULL function(Response $response)
+	 * @param  callable|null function(Response $response)
 	 * @return self
 	 */
 	public function onResponse($callback)
@@ -105,5 +105,4 @@ abstract class AbstractClient extends Github\Sanity implements IClient
 	 * @throws BadResponseException
 	 */
 	abstract protected function process(Request $request);
-
 }

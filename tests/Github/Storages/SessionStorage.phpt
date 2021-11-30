@@ -27,7 +27,7 @@ Assert::same([
 	'test' => ['foo' => $o],
 ],$_SESSION);
 
-Assert::same($storage, $storage->set('foo', NULL));
+Assert::same($storage, $storage->set('foo', null));
 Assert::same([
 	'test' => [],
 ], $_SESSION);

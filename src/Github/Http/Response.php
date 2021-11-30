@@ -65,7 +65,7 @@ class Response extends Message
 
 
 	/**
-	 * @return Response|NULL
+	 * @return Response|null
 	 */
 	public function getPrevious()
 	{
@@ -78,7 +78,7 @@ class Response extends Message
 	 *
 	 * @throws Github\LogicException
 	 */
-	public function setPrevious(Response $previous = NULL)
+	public function setPrevious(Response $previous = null)
 	{
 		if ($this->previous) {
 			throw new Github\LogicException('Previous response is already set.');
@@ -87,5 +87,4 @@ class Response extends Message
 
 		return $this;
 	}
-
 }

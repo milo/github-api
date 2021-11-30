@@ -15,8 +15,7 @@ interface ICache
 
 	/**
 	 * @param  string
-	 * @return mixed|NULL
+	 * @return mixed|null
 	 */
 	function load($key);
-
 }

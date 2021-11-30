@@ -7,7 +7,7 @@
  */
 
 require __DIR__ . '/../../bootstrap.php';
-Assert::true(TRUE);
+Assert::true(true);
 
 
 $_SESSION = [];

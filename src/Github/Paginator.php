@@ -18,10 +18,10 @@ class Paginator extends Sanity implements \Iterator
 	/** @var Http\Request */
 	private $firstRequest;
 
-	/** @var Http\Request|NULL */
+	/** @var Http\Request|null */
 	private $request;
 
-	/** @var Http\Response|NULL */
+	/** @var Http\Response|null */
 	private $response;
 
 	/** @var int */
@@ -41,13 +41,13 @@ class Paginator extends Sanity implements \Iterator
 	/**
 	 * Limits maximum steps of iteration.
 	 *
-	 * @param  int|NULL
+	 * @param  int|null
 	 * @return self
 	 */
 	public function limit($limit)
 	{
-		$this->limit = $limit === NULL
-			? NULL
+		$this->limit = $limit === null
+			? null
 			: (int) $limit;
 
 		return $this;
@@ -61,7 +61,7 @@ class Paginator extends Sanity implements \Iterator
 	public function rewind()
 	{
 		$this->request = $this->firstRequest;
-		$this->response = NULL;
+		$this->response = null;
 		$this->counter = 0;
 	}
 
@@ -72,7 +72,7 @@ class Paginator extends Sanity implements \Iterator
 	#[\ReturnTypeWillChange]
 	public function valid()
 	{
-		return $this->request !== NULL && ($this->limit === NULL || $this->counter < $this->limit);
+		return $this->request !== null && ($this->limit === null || $this->counter < $this->limit);
 	}
 
 
@@ -113,17 +113,17 @@ class Paginator extends Sanity implements \Iterator
 				$this->request->getContent()
 			);
 		} else {
-			$this->request = NULL;
+			$this->request = null;
 		}
 
-		$this->response = NULL;
+		$this->response = null;
 		$this->counter++;
 	}
 
 
 	private function load()
 	{
-		if ($this->response === NULL) {
+		if ($this->response === null) {
 			$this->response = $this->api->request($this->request);
 		}
 	}
@@ -149,15 +149,14 @@ class Paginator extends Sanity implements \Iterator
 	 *
 	 * @param  string
 	 * @param  string
-	 * @return string|NULL
+	 * @return string|null
 	 */
 	public static function parseLink($link, $rel)
 	{
 		if (!preg_match('(<([^>]+)>;\s*rel="' . preg_quote($rel) . '")', $link, $match)) {
-			return NULL;
+			return null;
 		}
 
 		return $match[1];
 	}
-
 }

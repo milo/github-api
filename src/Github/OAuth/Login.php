@@ -30,7 +30,7 @@ class Login extends Github\Sanity
 	private $client;
 
 
-	public function __construct(Configuration $conf, Storages\ISessionStorage $storage = NULL, Http\IClient $client = NULL)
+	public function __construct(Configuration $conf, Storages\ISessionStorage $storage = null, Http\IClient $client = null)
 	{
 		$this->conf = $conf;
 		$this->storage = $storage ?: new Storages\SessionStorage;
@@ -51,10 +51,10 @@ class Login extends Github\Sanity
 	 * @param  string  URL to redirect back from Github when user approves the permissions request
 	 * @param  callable function($githubUrl)  makes HTTP redirect to Github
 	 */
-	public function askPermissions($backUrl, $redirectCb = NULL)
+	public function askPermissions($backUrl, $redirectCb = null)
 	{
 		/** @todo Something more safe? */
-		$state = sha1(uniqid(microtime(TRUE), TRUE));
+		$state = sha1(uniqid(microtime(true), true));
 		$params = [
 			'client_id' => $this->conf->clientId,
 			'redirect_uri' => $backUrl,
@@ -65,7 +65,7 @@ class Login extends Github\Sanity
 		$this->storage->set('auth.state', $state);
 
 		$url = $this->authUrl . '?' . http_build_query($params);
-		if ($redirectCb === NULL) {
+		if ($redirectCb === null) {
 			header("Location: $url");
 			die();
 		} else {
@@ -134,7 +134,7 @@ class Login extends Github\Sanity
 	 */
 	public function hasToken()
 	{
-		return $this->storage->get('auth.token') !== NULL;
+		return $this->storage->get('auth.token') !== null;
 	}
 
 
@@ -146,7 +146,7 @@ class Login extends Github\Sanity
 	public function getToken()
 	{
 		$token = $this->storage->get('auth.token');
-		if ($token === NULL) {
+		if ($token === null) {
 			throw new Github\LogicException('Token has not been obtained yet.');
 
 		} elseif ($token instanceof Token) {

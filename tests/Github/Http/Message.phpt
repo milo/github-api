@@ -42,10 +42,10 @@ Assert::same('val', $message->getHeader('Set'));
 Assert::same($message, $message->setHeader('a', 'val'));
 Assert::same('val', $message->getHeader('a'));
 
-Assert::same($message, $message->setHeader('a', NULL));
+Assert::same($message, $message->setHeader('a', null));
 Assert::false($message->hasHeader('a'));
 
 
 # Content
-Assert::same(NULL, (new TestMessage([], NULL))->getContent());
+Assert::same(null, (new TestMessage([], null))->getContent());
 Assert::same('', (new TestMessage([], ''))->getContent());

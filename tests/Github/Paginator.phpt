@@ -48,7 +48,7 @@ class PaginatorTestCase extends Tester\TestCase
 		));
 
 		$requests = [];
-		$this->api->onRequest = function(Milo\Github\Http\Request $request) use (& $requests, & $responses) {
+		$this->api->onRequest = function(Milo\Github\Http\Request $request) use (&$requests, &$responses) {
 			$requests[] = $request;
 			return array_shift($responses);
 		};
@@ -96,8 +96,8 @@ class PaginatorTestCase extends Tester\TestCase
 		Assert::same('url://b', Milo\Github\Paginator::parseLink($link, 'b'));
 		Assert::same('url://c', Milo\Github\Paginator::parseLink($link, 'c'));
 
-		Assert::same(NULL, Milo\Github\Paginator::parseLink('', ''));
-		Assert::same(NULL, Milo\Github\Paginator::parseLink('<url://test>; rel="foo"', 'bar'));
+		Assert::same(null, Milo\Github\Paginator::parseLink('', ''));
+		Assert::same(null, Milo\Github\Paginator::parseLink('<url://test>; rel="foo"', 'bar'));
 	}
 
 
@@ -114,7 +114,7 @@ class PaginatorTestCase extends Tester\TestCase
 			'url://test?page=20'
 		));
 
-		$this->api->onRequest = function(Milo\Github\Http\Request $request) use (& $requests, & $stack) {
+		$this->api->onRequest = function(Milo\Github\Http\Request $request) use (&$requests, &$stack) {
 			$requests[] = $request;
 			return array_shift($stack);
 		};

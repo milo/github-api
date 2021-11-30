@@ -39,7 +39,7 @@ test(function() {
 	Assert::null($api->getToken());
 	Assert::same($api, $api->setToken($token));
 	Assert::same($token, $api->getToken());
-	$api->setToken(NULL);
+	$api->setToken(null);
 	Assert::null($api->getToken());
 
 });
@@ -59,7 +59,7 @@ test(function() {
 
 	# No slashes in URL
 	$api->setUrl('url://test');
-	$request = $api->createRequest('', 'path', [], [], NULL);
+	$request = $api->createRequest('', 'path', [], [], null);
 	Assert::same('url://test/path', $request->getUrl());
 
 	# Array to JSON
@@ -81,18 +81,18 @@ test(function() {
 	$api->setUrl('url://test');
 
 	Assert::same([], $api->getDefaultParameters());
-	$request = $api->createRequest('', 'path', [], [], NULL);
+	$request = $api->createRequest('', 'path', [], [], null);
 	Assert::same('url://test/path', $request->getUrl());
 
 	$params = ['foo' => 'bar'];
 	$api->setDefaultParameters($params);
 
 	Assert::same($params, $api->getDefaultParameters());
-	$request = $api->createRequest('', 'path', [], [], NULL);
+	$request = $api->createRequest('', 'path', [], [], null);
 	Assert::same('url://test/path?foo=bar', $request->getUrl());
 
 	Assert::same($params, $api->getDefaultParameters());
-	$request = $api->createRequest('', 'path', ['foo' => 'fuzz'], [], NULL);
+	$request = $api->createRequest('', 'path', ['foo' => 'fuzz'], [], null);
 	Assert::same('url://test/path?foo=fuzz', $request->getUrl());
 });
 
@@ -103,23 +103,23 @@ test(function() {
 	$api = new Milo\Github\Api($client);
 	$api->setUrl('url://test');
 
-	$request = $api->createRequest('', 'url://test/path', [], [], NULL);
+	$request = $api->createRequest('', 'url://test/path', [], [], null);
 	Assert::same('url://test/path', $request->getUrl());
 
-	$request = $api->createRequest('', 'url://tested/path', [], [], NULL);
+	$request = $api->createRequest('', 'url://tested/path', [], [], null);
 	Assert::same('url://test/ed/path', $request->getUrl());
 
-	$request = $api->createRequest('', 'uRl://TeSt/path', [], [], NULL);
+	$request = $api->createRequest('', 'uRl://TeSt/path', [], [], null);
 	Assert::same('url://test/path', $request->getUrl());
 
 	# Absolute HTTPS URL with different host
-	$request = $api->createRequest('', 'https://example.com', [], [], NULL);
+	$request = $api->createRequest('', 'https://example.com', [], [], null);
 	Assert::same('https://example.com/', $request->getUrl());
-	$request = $api->createRequest('', 'https://example.com/path', [], [], NULL);
+	$request = $api->createRequest('', 'https://example.com/path', [], [], null);
 	Assert::same('https://example.com/path', $request->getUrl());
 
 	# Absolute non-HTTPS URL with different host is not allowed (should be?)
-	$request = $api->createRequest('', 'http://example.com', [], [], NULL);
+	$request = $api->createRequest('', 'http://example.com', [], [], null);
 	Assert::same('url://test/http://example.com', $request->getUrl());
 });
 

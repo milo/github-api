@@ -31,13 +31,13 @@ test(function() {
 				'header' => "custom: header\r\nexpect: \r\nconnection: close\r\n",
 				'follow_location' => 0,
 				'protocol_version' => 1.1,
-				'ignore_errors' => TRUE,
+				'ignore_errors' => true,
 				'content' => '{content}',
 			],
 			'ssl' => [
-				'verify_peer' => TRUE,
+				'verify_peer' => true,
 				'cafile' => realpath(__DIR__ . '/../../../src/ca-chain.crt'),
-				'disable_compression' => TRUE,
+				'disable_compression' => true,
 			],
 		], $contextOptions);
 
@@ -59,9 +59,9 @@ test(function() {
 		Assert::type('array', $contextOptions['ssl']);
 		Assert::same([
 			'option' => 'value',
-			'verify_peer' => TRUE,
+			'verify_peer' => true,
 			'cafile' => realpath(__DIR__ . '/../../../src/ca-chain.crt'),
-			'disable_compression' => TRUE,
+			'disable_compression' => true,
 		], $contextOptions['ssl']);
 
 		return [200, [], ''];

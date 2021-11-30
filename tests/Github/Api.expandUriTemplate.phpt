@@ -29,7 +29,7 @@ $cases = [
 	'&' => '',
 ];
 foreach ($cases as $operator => $expected) {
-	Assert::same($expected, $api->expandUriTemplate("{{$operator}a}", ['a' => NULL]));
+	Assert::same($expected, $api->expandUriTemplate("{{$operator}a}", ['a' => null]));
 }
 
 
@@ -46,7 +46,7 @@ $cases = [
 ];
 foreach ($cases as $operator => $expected) {
 	Assert::same($expected, $api->expandUriTemplate("{{$operator}a}", ['a' => '']));
-	Assert::same($expected, $api->expandUriTemplate("{{$operator}a}", ['a' => FALSE]));
+	Assert::same($expected, $api->expandUriTemplate("{{$operator}a}", ['a' => false]));
 }
 
 
@@ -328,7 +328,7 @@ test(function() use ($api) {
 		'y' => 768,
 		'empty' => '',
 		'empty_keys' => [],
-		'undef' => NULL,
+		'undef' => null,
 	];
 	$cases = [
 		# 3.2.1. Variable Expansion
