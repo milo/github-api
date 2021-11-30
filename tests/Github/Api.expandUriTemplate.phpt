@@ -11,7 +11,7 @@ require __DIR__ . '/../bootstrap.php';
 
 class TestApi extends Milo\Github\Api
 {
-	public function expandUriTemplate($url, array $parameters, array $defaultParameters = [])
+	public function expandUriTemplate(string $url, array $parameters, array $defaultParameters = []): string
 	{
 		return parent::expandUriTemplate($url, $parameters, $defaultParameters);
 	}

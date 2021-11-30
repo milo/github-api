@@ -16,35 +16,23 @@ class Configuration
 {
 	use Github\Strict;
 
-	/** @var string */
-	public $clientId;
-
-	/** @var string */
-	public $clientSecret;
-
-	/** @var string[] */
-	public $scopes;
-
 
 	/**
-	 * @param  string
-	 * @param  string
-	 * @param  string[]
+	 * @param  string[] $scopes
 	 */
-	public function __construct($clientId, $clientSecret, array $scopes = [])
-	{
-		$this->clientId = $clientId;
-		$this->clientSecret = $clientSecret;
-		$this->scopes = $scopes;
-    }
+	public function __construct(
+		public string $clientId,
+		public string $clientSecret,
+		public array $scopes = [],
+	) {}
 
 
-	/**
-	 * @return Configuration
-	 */
-	public static function fromArray(array $conf)
+	public static function fromArray(array $conf): static
 	{
-		return new static($conf['clientId'], $conf['clientSecret'], isset($conf['scopes']) ? $conf['scopes'] : []);
+		return new static(
+			$conf['clientId'],
+			$conf['clientSecret'],
+			$conf['scopes'] ?? [],
+		);
 	}
-
 }

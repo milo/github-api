@@ -11,8 +11,15 @@ require __DIR__ . '/../../bootstrap.php';
 
 class TestMessage extends Milo\Github\Http\Message
 {
-	public function addHeader($name, $value) { return parent::addHeader($name, $value); }
-	public function setHeader($name, $value) { return parent::setHeader($name, $value); }
+	public function addHeader(string $name, ?string $value): static
+	{
+		return parent::addHeader($name, $value);
+	}
+
+	public function setHeader(string $name, ?string $value): static
+	{
+		return parent::setHeader($name, $value);
+	}
 }
 
 

@@ -14,29 +14,24 @@ use Milo\Github;
  */
 class CurlClient extends AbstractClient
 {
-	/** @var array|null */
-	private $options;
-
 	/** @var resource */
 	private $curl;
 
 
 	/**
-	 * @param  array  cURL options {@link http://php.net/manual/en/function.curl-setopt.php}
-	 *
+	 * @param  ?array $options  cURL options {@link http://php.net/manual/en/function.curl-setopt.php}
 	 * @throws Github\LogicException
 	 */
-	public function __construct(array $options = null)
-	{
+	public function __construct(
+		private ?array $options = null,
+	) {
 		if (!extension_loaded('curl')) {
 			throw new Github\LogicException('cURL extension is not loaded.');
 		}
-
-		$this->options = $options;
 	}
 
 
-	protected function setupRequest(Request $request)
+	protected function setupRequest(Request $request): void
 	{
 		parent::setupRequest($request);
 		$request->addHeader('Connection', 'keep-alive');
@@ -44,11 +39,9 @@ class CurlClient extends AbstractClient
 
 
 	/**
-	 * @return Response
-	 *
 	 * @throws BadResponseException
 	 */
-	protected function process(Request $request)
+	protected function process(Request $request): Response
 	{
 		$headers = [];
 		foreach ($request->getHeaders() as $name => $value) {
@@ -84,7 +77,7 @@ class CurlClient extends AbstractClient
 					$responseHeaders[$last] .= ' ' . trim($line);  # RFC2616, 2.2
 
 				} elseif ($line !== "\r\n") {
-					list($name, $value) = explode(':', $line, 2);
+					[$name, $value] = explode(':', $line, 2);
 					$responseHeaders[$last = trim($name)] = trim($value);
 				}
 
@@ -118,6 +111,6 @@ class CurlClient extends AbstractClient
 			throw new BadResponseException('HTTP status code is missing:' . curl_error($this->curl), curl_errno($this->curl));
 		}
 
-		return new Response($code, $responseHeaders, $content);
+		return new Response((int) $code, $responseHeaders, $content);
 	}
 }

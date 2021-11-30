@@ -19,53 +19,51 @@ class MockClient implements Http\IClient
 	/** @var callable */
 	public $onRequest;
 
-	/** @var int */
-	public $requestCount = 0;
+	public int $requestCount = 0;
 
 
-	public function request(Http\Request $request)
+	public function request(Http\Request $request): Http\Response
 	{
 		$response = call_user_func($this->onRequest, $request);
 		$this->requestCount++;
 		return $response;
 	}
 
-	public function onRequest($foo)
+	public function onRequest(?callable $foo): static
 	{
 		trigger_error('Inner onRequest called: ' . var_export($foo, true), E_USER_NOTICE);
+		return $this;
 	}
 
-	public function onResponse($foo)
+	public function onResponse(?callable $foo): static
 	{
 		trigger_error('Inner onResponse called: ' . var_export($foo, true), E_USER_NOTICE);
+		return $this;
 	}
 }
 
 
 class MockCache implements Milo\Github\Storages\ICache
 {
-	private $cache = [];
+	private array $cache = [];
 
-	public function save($key, $value) {
+	public function save(string $key, mixed $value): mixed
+	{
 		return $this->cache[$key] = $value;
 	}
 
-	public function load($key)
+	public function load(string $key): mixed
 	{
-		return isset($this->cache[$key])
-			? $this->cache[$key]
-			: null;
+		return $this->cache[$key] ?? null;
 	}
 }
 
 
 class CachingTestCase extends Tester\TestCase
 {
-	/** @var Http\CachedClient */
-	private $client;
+	private Http\CachedClient $client;
 
-	/** @var MockClient */
-	private $innerClient;
+	private MockClient $innerClient;
 
 
 	public function setup()
@@ -86,11 +84,13 @@ class CachingTestCase extends Tester\TestCase
 	{
 		Assert::same($this->innerClient, $this->client->getInnerClient());
 
-		Assert::error(function() {
-			Assert::same($this->client, $this->client->onRequest('callback-1'));
-			Assert::same($this->client, $this->client->onResponse('callback-2'));
+		$cb = fn() => null;
+
+		Assert::error(function() use ($cb) {
+			Assert::same($this->client, $this->client->onRequest($cb));
+			Assert::same($this->client, $this->client->onResponse($cb));
 		}, [
-			[E_USER_NOTICE, "Inner onRequest called: 'callback-1'"],
+			[E_USER_NOTICE, "Inner onRequest called: Closure::%A%"],
 			[E_USER_NOTICE, 'Inner onResponse called: NULL'],
 		]);
 

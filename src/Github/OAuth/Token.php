@@ -16,42 +16,24 @@ class Token
 {
 	use Github\Strict;
 
-	/** @var string */
-	private $value;
-
-	/** @var string */
-	private $type;
-
-	/** @var string[] */
-	private $scopes;
-
 
 	/**
-	 * @param  string
-	 * @param  string
-	 * @param  string[]
+	 * @param  string[] $scopes
 	 */
-	public function __construct($value, $type = '', array $scopes = [])
-	{
-		$this->value = $value;
-		$this->type = $type;
-		$this->scopes = $scopes;
-	}
+	public function __construct(
+		private string $value,
+		private string $type = '',
+		private array $scopes = []
+	) {}
 
 
-	/**
-	 * @return string
-	 */
-	public function getValue()
+	public function getValue(): string
 	{
 		return $this->value;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getType()
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -60,7 +42,7 @@ class Token
 	/**
 	 * @return string[]
 	 */
-	public function getScopes()
+	public function getScopes(): array
 	{
 		return $this->scopes;
 	}
@@ -68,11 +50,8 @@ class Token
 
 	/**
 	 * @see https://developer.github.com/v3/oauth/#scopes
-	 *
-	 * @param  string
-	 * @return bool
 	 */
-	public function hasScope($scope)
+	public function hasScope(string $scope): bool
 	{
 		if (in_array($scope, $this->scopes, true)) {
 			return true;
@@ -93,7 +72,7 @@ class Token
 
 
 	/** @internal */
-	public function toArray()
+	public function toArray(): array
 	{
 		return [
 			'value' => $this->value,
@@ -104,9 +83,8 @@ class Token
 
 
 	/** @internal */
-	public static function createFromArray(array $data)
+	public static function createFromArray(array $data): static
 	{
 		return new static($data['value'], $data['type'], $data['scopes']);
 	}
-
 }

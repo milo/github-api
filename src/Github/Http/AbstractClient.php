@@ -17,14 +17,14 @@ abstract class AbstractClient implements IClient
 	use Github\Strict;
 
 	/** @var int[]  will follow Location header on these response codes */
-	public $redirectCodes = [
+	public array $redirectCodes = [
 		Response::S301_MOVED_PERMANENTLY,
 		Response::S302_FOUND,
 		Response::S307_TEMPORARY_REDIRECT,
 	];
 
-	/** @var int  maximum redirects per request*/
-	public $maxRedirects = 5;
+	/** Maximum redirects per request */
+	public int $maxRedirects = 5;
 
 	/** @var callable|null */
 	private $onRequest;
@@ -36,11 +36,9 @@ abstract class AbstractClient implements IClient
 	/**
 	 * @see https://developer.github.com/v3/#http-redirects
 	 *
-	 * @return Response
-	 *
 	 * @throws BadResponseException
 	 */
-	public function request(Request $request)
+	public function request(Request $request): Response
 	{
 		$request = clone $request;
 
@@ -75,38 +73,30 @@ abstract class AbstractClient implements IClient
 	}
 
 
-	/**
-	 * @param  callable|null function(Request $request)
-	 * @return self
-	 */
-	public function onRequest($callback)
+	/** @inheritdoc */
+	public function onRequest(?callable $callback): static
 	{
 		$this->onRequest = $callback;
 		return $this;
 	}
 
 
-	/**
-	 * @param  callable|null function(Response $response)
-	 * @return self
-	 */
-	public function onResponse($callback)
+	/** @inheritdoc */
+	public function onResponse(?callable $callback): static
 	{
 		$this->onResponse = $callback;
 		return $this;
 	}
 
 
-	protected function setupRequest(Request $request)
+	protected function setupRequest(Request $request): void
 	{
 		$request->addHeader('Expect', '');
 	}
 
 
 	/**
-	 * @return Response
-	 *
 	 * @throws BadResponseException
 	 */
-	abstract protected function process(Request $request);
+	abstract protected function process(Request $request): Response;
 }

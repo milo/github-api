@@ -46,25 +46,17 @@ namespace Milo\Github {
 	 */
 	abstract class ApiException extends RuntimeException
 	{
-		/** @var Http\Response|null */
-		private $response;
+		private ?Http\Response $response;
 
 
-		/**
-		 * @param string
-		 * @param int
-		 */
-		public function __construct($message = '', $code = 0, \Exception $previous = null, Http\Response $response = null)
+		public function __construct(string $message = '', int $code = 0, \Exception $previous = null, Http\Response $response = null)
 		{
 			parent::__construct($message, $code, $previous);
 			$this->response = clone $response;
 		}
 
 
-		/**
-		 * @return Http\Response|null
-		 */
-		final public function getResponse()
+		final public function getResponse(): ?Http\Response
 		{
 			return $this->response;
 		}

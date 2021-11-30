@@ -16,20 +16,15 @@ class Api
 {
 	use Strict;
 
-	/** @var string */
-	private $url = 'https://api.github.com';
+	private string $url = 'https://api.github.com';
 
-	/** @var string */
-	private $defaultAccept = 'application/vnd.github.v3+json';
+	private string $defaultAccept = 'application/vnd.github.v3+json';
 
-	/** @var array|null */
-	private $defaultParameters = [];
+	private ?array $defaultParameters = [];
 
-	/** @var Http\IClient */
-	private $client;
+	private Http\IClient $client;
 
-	/** @var OAuth\Token|null */
-	private $token;
+	private ?OAuth\Token $token = null;
 
 
 	public function __construct(Http\IClient $client = null)
@@ -38,60 +33,40 @@ class Api
 	}
 
 
-	/**
-	 * @return self
-	 */
-	public function setToken(OAuth\Token $token = null)
+	public function setToken(OAuth\Token $token = null): static
 	{
 		$this->token = $token;
 		return $this;
 	}
 
 
-	/**
-	 * @return OAuth\Token|null
-	 */
-	public function getToken()
+	public function getToken(): ?OAuth\Token
 	{
 		return $this->token;
 	}
 
 
-	/**
-	 * @param  array
-	 * @return self
-	 */
-	public function setDefaultParameters(array $defaults = null)
+	public function setDefaultParameters(array $defaults = null): static
 	{
 		$this->defaultParameters = $defaults ?: [];
 		return $this;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getDefaultParameters()
+	public function getDefaultParameters(): array
 	{
 		return $this->defaultParameters;
 	}
 
 
-	/**
-	 * @param  string
-	 * @return self
-	 */
-	public function setDefaultAccept($accept)
+	public function setDefaultAccept(string $accept): self
 	{
 		$this->defaultAccept = $accept;
 		return $this;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getDefaultAccept()
+	public function getDefaultAccept(): string
 	{
 		return $this->defaultAccept;
 	}
@@ -101,12 +76,9 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 */
-	public function delete($urlPath, array $parameters = [], array $headers = [])
+	public function delete(string $urlPath, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::DELETE, $urlPath, $parameters, $headers)
@@ -118,12 +90,9 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 */
-	public function get($urlPath, array $parameters = [], array $headers = [])
+	public function get(string $urlPath, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::GET, $urlPath, $parameters, $headers)
@@ -135,12 +104,9 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 */
-	public function head($urlPath, array $parameters = [], array $headers = [])
+	public function head(string $urlPath, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::HEAD, $urlPath, $parameters, $headers)
@@ -152,14 +118,10 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @param  mixed
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 * @throws JsonException
 	 */
-	public function patch($urlPath, $content, array $parameters = [], array $headers = [])
+	public function patch(string $urlPath, string|array|object|null $content, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::PATCH, $urlPath, $parameters, $headers, $content)
@@ -171,14 +133,10 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @param  mixed
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 * @throws JsonException
 	 */
-	public function post($urlPath, $content, array $parameters = [], array $headers = [])
+	public function post(string $urlPath, string|array|object|null $content, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::POST, $urlPath, $parameters, $headers, $content)
@@ -190,14 +148,10 @@ class Api
 	 * @see createRequest()
 	 * @see request()
 	 *
-	 * @param  string
-	 * @param  mixed
-	 * @return Http\Response
-	 *
 	 * @throws MissingParameterException
 	 * @throws JsonException
 	 */
-	public function put($urlPath, $content = null, array $parameters = [], array $headers = [])
+	public function put(string $urlPath, string|array|object|null $content = null, array $parameters = [], array $headers = []): Http\Response
 	{
 		return $this->request(
 			$this->createRequest(Http\Request::PUT, $urlPath, $parameters, $headers, $content)
@@ -206,11 +160,9 @@ class Api
 
 
 	/**
-	 * @return Http\Response
-	 *
 	 * @throws Http\BadResponseException
 	 */
-	public function request(Http\Request $request)
+	public function request(Http\Request $request): Http\Response
 	{
 		$request = clone $request;
 
@@ -228,17 +180,16 @@ class Api
 
 
 	/**
-	 * @param  string  Http\Request::GET|POST|...
-	 * @param  string  path like '/users/:user/repos' where ':user' is substitution
-	 * @param  array[name => value]  replaces substitutions in $urlPath, the rest is appended as query string to URL
-	 * @param  array[name => value]  name is case-insensitive
-	 * @param  mixed|null  arrays and objects are encoded to JSON and Content-Type is set
-	 * @return Http\Request
+	 * @param  string $method  Http\Request::GET|POST|...
+	 * @param  string $urlPath  like '/users/:user/repos' where ':user' is substitution
+	 * @param  string[] $parameters  replaces substitutions in $urlPath, the rest is appended as query string to URL
+	 * @param  string[] $headers  key as case-insensitive header name
+	 * @param  string|array|object|null $content  arrays and objects are encoded to JSON and Content-Type is set
 	 *
 	 * @throws MissingParameterException  when substitution is used in URL but parameter is missing
 	 * @throws JsonException  when encoding to JSON fails
 	 */
-	public function createRequest($method, $urlPath, array $parameters = [], array $headers = [], $content = null)
+	public function createRequest(string $method, string $urlPath, array $parameters = [], array $headers = [], string|array|object $content = null): Http\Request
 	{
 		if (stripos($urlPath, $this->url) === 0) {  # Allows non-HTTPS URLs
 			$baseUrl = $this->url;
@@ -246,13 +197,13 @@ class Api
 
 		} elseif (preg_match('#^(https://[^/]+)(/.*)?$#', $urlPath, $m)) {
 			$baseUrl = $m[1];
-			$urlPath = isset($m[2]) ? $m[2] : '';
+			$urlPath = $m[2] ?? '';
 
 		} else {
 			$baseUrl = $this->url;
 		}
 
-		if (strpos($urlPath, '{') === false) {
+		if (!str_contains($urlPath, '{')) {
 			$urlPath = $this->expandColonParameters($urlPath, $parameters, $this->defaultParameters);
 		} else {
 			$urlPath = $this->expandUriTemplate($urlPath, $parameters, $this->defaultParameters);
@@ -260,7 +211,7 @@ class Api
 
 		$url = rtrim($baseUrl, '/') . '/' . ltrim($urlPath, '/');
 
-		if ($content !== null && (is_array($content) || is_object($content))) {
+		if (is_array($content) || is_object($content)) {
 			$headers['Content-Type'] = 'application/json; charset=utf-8';
 			$content = Helpers::jsonEncode($content);
 		}
@@ -270,13 +221,11 @@ class Api
 
 
 	/**
-	 * @param  Http\Response
-	 * @param  array|null  these codes are treated as success; code < 300 if NULL
-	 * @return mixed
+	 * @param  ?int[] $okCodes  these codes are treated as success; code < 300 if null
 	 *
 	 * @throws ApiException
 	 */
-	public function decode(Http\Response $response, array $okCodes = null)
+	public function decode(Http\Response $response, array $okCodes = null): mixed
 	{
 		$content = $response->getContent();
 		if (preg_match('~application/json~i', $response->getHeader('Content-Type', ''))) {
@@ -327,12 +276,9 @@ class Api
 	 *
 	 * @see get()
 	 *
-	 * @param  string
-	 * @return Paginator
-	 *
 	 * @throws MissingParameterException
 	 */
-	public function paginator($urlPath, array $parameters = [], array $headers = [])
+	public function paginator(string $urlPath, array $parameters = [], array $headers = []): Paginator
 	{
 		return new Paginator(
 			$this,
@@ -341,20 +287,13 @@ class Api
 	}
 
 
-	/**
-	 * @return Http\IClient
-	 */
-	public function getClient()
+	public function getClient(): Http\IClient
 	{
 		return $this->client;
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Api
-	 */
-	public function withUrl($url)
+	public function withUrl(string $url): Api
 	{
 		$api = clone $this;
 		$api->setUrl($url);
@@ -362,33 +301,23 @@ class Api
 	}
 
 
-	/**
-	 * @param  string
-	 * @return self
-	 */
-	public function setUrl($url)
+	public function setUrl(string $url): static
 	{
 		$this->url = $url;
 		return $this;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getUrl()
+	public function getUrl(): string
 	{
 		return $this->url;
 	}
 
 
 	/**
-	 * @param  string
-	 * @return string
-	 *
 	 * @throws MissingParameterException
 	 */
-	protected function expandColonParameters($url, array $parameters, array $defaultParameters)
+	protected function expandColonParameters(string $url, array $parameters, array $defaultParameters): string
 	{
 		$parameters += $defaultParameters;
 
@@ -416,11 +345,8 @@ class Api
 	 *
 	 * @see http://tools.ietf.org/html/rfc6570
 	 * @todo Inject remaining default parameters into query string?
-	 *
-	 * @param  string
-	 * @return string
 	 */
-	protected function expandUriTemplate($url, array $parameters, array $defaultParameters)
+	protected function expandUriTemplate(string $url, array $parameters, array $defaultParameters): string
 	{
 		$parameters += $defaultParameters;
 
@@ -464,8 +390,8 @@ class Api
 					$isAssoc = key($value) !== 0;
 
 					// The '*' (explode) modifier
+					$parts = [];
 					if ($explode) {
-						$parts = [];
 						if ($isAssoc) {
 							$this->walk($value, function ($v, $k) use (&$parts, $flags, $maxLength) {
 								$parts[] = $this->prefix(['named' => true] + $flags, $k, $this->escape($flags, $v, $maxLength));
@@ -491,7 +417,6 @@ class Api
 						}
 
 					} else {
-						$parts = [];
 						$this->walk($value, function($v, $k) use (&$parts, $isAssoc, $flags, $maxLength) {
 							if ($isAssoc) {
 								$parts[] = $this->escape($flags, $k);
@@ -517,12 +442,9 @@ class Api
 
 
 	/**
-	 * @param  array
-	 * @param  string
-	 * @param  string  already escaped
-	 * @return string
+	 * @param  string $value  already escaped
 	 */
-	private function prefix(array $flags, $name, $value)
+	private function prefix(array $flags, string $name, string $value): string
 	{
 		$prefix = '';
 		if ($flags['named']) {
@@ -538,13 +460,7 @@ class Api
 	}
 
 
-	/**
-	 * @param  array
-	 * @param  mixed
-	 * @param  int|null
-	 * @return string
-	 */
-	private function escape(array $flags, $value, $maxLength = null)
+	private function escape(array $flags, string|int|false $value, int $maxLength = null): string
 	{
 		$value = (string) $value;
 
@@ -572,11 +488,7 @@ class Api
 	}
 
 
-	/**
-	 * @param  array
-	 * @param  callable
-	 */
-	private function walk(array $array, $cb)
+	private function walk(array $array, callable $cb): void
 	{
 		foreach ($array as $k => $v) {
 			if ($v === null) {
@@ -588,15 +500,9 @@ class Api
 	}
 
 
-	/**
-	 * @param  \stdClass
-	 * @return string
-	 */
-	private static function errorMessage($content)
+	private static function errorMessage(\stdClass $content): string
 	{
-		$message = isset($content->message)
-			? $content->message
-			: 'Unknown error';
+		$message = $content->message ?? 'Unknown error';
 
 		if (isset($content->errors)) {
 			$message .= implode(', ', array_map(function($error) {

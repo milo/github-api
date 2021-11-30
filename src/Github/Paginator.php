@@ -6,7 +6,7 @@ namespace Milo\Github;
 
 
 /**
- * Iterates through the Github API responses by Link: header.
+ * Iterates through the GitHub API responses by Link: header.
  *
  * @see https://developer.github.com/guides/traversing-with-pagination/
  *
@@ -16,53 +16,36 @@ class Paginator implements \Iterator
 {
 	use Strict;
 
-	/** @var Api */
-	private $api;
+	private Http\Request $firstRequest;
 
-	/** @var Http\Request */
-	private $firstRequest;
+	private ?Http\Request $request;
 
-	/** @var Http\Request|null */
-	private $request;
+	private ?Http\Response $response;
 
-	/** @var Http\Response|null */
-	private $response;
+	private ?int $limit = null;
 
-	/** @var int */
-	private $limit;
-
-	/** @var int */
-	private $counter = 0;
+	private int $counter = 0;
 
 
-	public function __construct(Api $api, Http\Request $request)
-	{
-		$this->api = $api;
+	public function __construct(
+		private Api $api,
+		Http\Request $request
+	) {
 		$this->firstRequest = clone $request;
 	}
 
 
 	/**
 	 * Limits maximum steps of iteration.
-	 *
-	 * @param  int|null
-	 * @return self
 	 */
-	public function limit($limit)
+	public function limit(?int $limit): static
 	{
-		$this->limit = $limit === null
-			? null
-			: (int) $limit;
-
+		$this->limit = $limit;
 		return $this;
 	}
 
 
-	/**
-	 * @return void
-	 */
-	#[\ReturnTypeWillChange]
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->request = $this->firstRequest;
 		$this->response = null;
@@ -70,42 +53,26 @@ class Paginator implements \Iterator
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	#[\ReturnTypeWillChange]
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->request !== null && ($this->limit === null || $this->counter < $this->limit);
 	}
 
 
-	/**
-	 * @return Http\Response
-	 */
-	#[\ReturnTypeWillChange]
-	public function current()
+	public function current(): Http\Response
 	{
 		$this->load();
 		return $this->response;
 	}
 
 
-	/**
-	 * @return int
-	 */
-	#[\ReturnTypeWillChange]
-	public function key()
+	public function key(): int
 	{
 		return static::parsePage($this->request->getUrl());
 	}
 
 
-	/**
-	 * @return void
-	 */
-	#[\ReturnTypeWillChange]
-	public function next()
+	public function next(): void
 	{
 		$this->load();
 
@@ -125,7 +92,7 @@ class Paginator implements \Iterator
 	}
 
 
-	private function load()
+	private function load(): void
 	{
 		if ($this->response === null) {
 			$this->response = $this->api->request($this->request);
@@ -133,34 +100,22 @@ class Paginator implements \Iterator
 	}
 
 
-	/**
-	 * @param  string
-	 * @return int
-	 */
-	public static function parsePage($url)
+	public static function parsePage(string $url): int
 	{
-		list (, $parametersStr) = explode('?', $url, 2) + ['', ''];
+		[, $parametersStr] = explode('?', $url, 2) + ['', ''];
 		parse_str($parametersStr, $parameters);
-
-		return isset($parameters['page'])
-			? max(1, (int) $parameters['page'])
-			: 1;
+		return max((int) ($parameters['page'] ?? 1), 1);
 	}
 
 
 	/**
 	 * @see  https://developer.github.com/guides/traversing-with-pagination/#navigating-through-the-pages
-	 *
-	 * @param  string
-	 * @param  string
-	 * @return string|null
 	 */
-	public static function parseLink($link, $rel)
+	public static function parseLink(string $link, string $rel): ?string
 	{
 		if (!preg_match('(<([^>]+)>;\s*rel="' . preg_quote($rel) . '")', $link, $match)) {
 			return null;
 		}
-
 		return $match[1];
 	}
 }

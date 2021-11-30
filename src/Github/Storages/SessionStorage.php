@@ -16,27 +16,15 @@ class SessionStorage implements ISessionStorage
 {
 	use Github\Strict;
 
-	const SESSION_KEY = 'milo.github-api';
-
-	/** @var string */
-	private $sessionKey;
+	public const SESSION_KEY = 'milo.github-api';
 
 
-	/**
-	 * @param  string
-	 */
-	public function __construct($sessionKey = self::SESSION_KEY)
-	{
-		$this->sessionKey = $sessionKey;
-	}
+	public function __construct(
+		private string $sessionKey = self::SESSION_KEY
+	) {}
 
 
-	/**
-	 * @param  string
-	 * @param  mixed
-	 * @return self
-	 */
-	public function set($name, $value)
+	public function set(string $name, mixed $value): static
 	{
 		if ($value === null) {
 			return $this->remove($name);
@@ -49,38 +37,22 @@ class SessionStorage implements ISessionStorage
 	}
 
 
-	/**
-	 * @param  string
-	 * @return mixed
-	 */
-	public function get($name)
+	public function get(string $name): mixed
 	{
 		$this->check(__METHOD__);
-
-		return isset($_SESSION[$this->sessionKey][$name])
-			? $_SESSION[$this->sessionKey][$name]
-			: null;
+		return $_SESSION[$this->sessionKey][$name] ?? null;
 	}
 
 
-	/**
-	 * @param  string
-	 * @return self
-	 */
-	public function remove($name)
+	public function remove(string $name): static
 	{
 		$this->check(__METHOD__);
-
 		unset($_SESSION[$this->sessionKey][$name]);
-
 		return $this;
 	}
 
 
-	/**
-	 * @param  string
-	 */
-	private function check($method)
+	private function check(string $method): void
 	{
 		if (!isset($_SESSION)) {
 			trigger_error("Start session before using $method().", E_USER_WARNING);

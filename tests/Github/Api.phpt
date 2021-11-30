@@ -11,13 +11,22 @@ require __DIR__ . '/../bootstrap.php';
 
 class MockIClient implements Milo\Github\Http\IClient
 {
-	public function request(Milo\Github\Http\Request $request)
+	public function request(Milo\Github\Http\Request $request): Milo\Github\Http\Response
 	{
 		throw new \LogicException;
 	}
 
-	public function onRequest($cb) {}
-	public function onResponse($cb) {}
+
+	public function onRequest(?callable $cb): static
+	{
+		return $this;
+	}
+
+
+	public function onResponse(?callable $cb): static
+	{
+		return $this;
+	}
 }
 
 

@@ -15,17 +15,13 @@ namespace Milo\Github;
  */
 class Helpers
 {
-	/** @var Http\IClient */
-	private static $client;
+	private static Http\IClient $client;
 
 
 	/**
-	 * @param  mixed
-	 * @return string
-	 *
 	 * @throws JsonException
 	 */
-	public static function jsonEncode($value)
+	public static function jsonEncode(mixed $value): string
 	{
 		$json = json_encode($value, JSON_UNESCAPED_UNICODE);
 		if ($error = json_last_error()) {
@@ -36,14 +32,11 @@ class Helpers
 
 
 	/**
-	 * @param  mixed
-	 * @return string
-	 *
 	 * @throws JsonException
 	 */
-	public static function jsonDecode($json)
+	public static function jsonDecode(string $json): mixed
 	{
-		$value = json_decode((string) $json, false, 512, JSON_BIGINT_AS_STRING);
+		$value = json_decode($json, false, 512, JSON_BIGINT_AS_STRING);
 		if ($error = json_last_error()) {
 			throw new JsonException(json_last_error_msg(), $error);
 		}
@@ -51,13 +44,9 @@ class Helpers
 	}
 
 
-	/**
-	 * @param  bool
-	 * @return Http\IClient
-	 */
-	public static function createDefaultClient($newInstance = false)
+	public static function createDefaultClient(bool $newInstance = false): Http\IClient
 	{
-		if (self::$client === null || $newInstance) {
+		if (empty(self::$client) || $newInstance) {
 			self::$client = extension_loaded('curl')
 				? new Http\CurlClient
 				: new Http\StreamClient;

@@ -11,7 +11,7 @@ require __DIR__ . '/../bootstrap.php';
 
 class TestApi extends Milo\Github\Api
 {
-	public function expandColonParameters($url, array $parameters, array $defaultParameters = [])
+	public function expandColonParameters(string $url, array $parameters, array $defaultParameters = []): string
 	{
 		return parent::expandColonParameters($url, $parameters, $defaultParameters);
 	}

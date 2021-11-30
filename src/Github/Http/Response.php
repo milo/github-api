@@ -15,7 +15,7 @@ use Milo\Github;
 class Response extends Message
 {
 	/** HTTP 1.1 code */
-	const
+	public const
 		S200_OK = 200,
 		S301_MOVED_PERMANENTLY = 301,
 		S302_FOUND = 302,
@@ -27,60 +27,43 @@ class Response extends Message
 		S404_NOT_FOUND = 404,
 		S422_UNPROCESSABLE_ENTITY = 422;
 
-	/** @var int */
-	private $code;
-
-	/** @var Response */
-	private $previous;
+	private ?Response $previous = null;
 
 
-	/**
-	 * @param  int
-	 * @param  array
-	 * @param  string
-	 */
-	public function __construct($code, array $headers, $content)
-	{
-		$this->code = (int) $code;
+	public function __construct(
+		private int $code,
+		array $headers,
+		?string $content,
+	) {
 		parent::__construct($headers, $content);
 	}
 
 
 	/**
-	 * HTTP code.
-	 * @return int
+	 * HTTP response status code.
 	 */
-	public function getCode()
+	public function getCode(): int
 	{
 		return $this->code;
 	}
 
 
-	/**
-	 * @param  int
-	 * @return bool
-	 */
-	public function isCode($code)
+	public function isCode(int $code): bool
 	{
-		return $this->code === (int) $code;
+		return $this->code === $code;
 	}
 
 
-	/**
-	 * @return Response|null
-	 */
-	public function getPrevious()
+	public function getPrevious(): ?Response
 	{
 		return $this->previous;
 	}
 
 
 	/**
-	 * @return self
-	 *
 	 * @throws Github\LogicException
 	 */
-	public function setPrevious(Response $previous = null)
+	public function setPrevious(Response $previous = null): static
 	{
 		if ($this->previous) {
 			throw new Github\LogicException('Previous response is already set.');

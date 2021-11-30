@@ -15,7 +15,7 @@ class TestClient extends Milo\Github\Http\AbstractClient
 	/** @var callable */
 	public $onProcess;
 
-	protected function process(Milo\Github\Http\Request $request)
+	protected function process(Milo\Github\Http\Request $request): Milo\Github\Http\Response
 	{
 		return call_user_func($this->onProcess, $request);
 	}

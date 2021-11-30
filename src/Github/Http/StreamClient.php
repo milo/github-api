@@ -12,20 +12,15 @@ namespace Milo\Github\Http;
  */
 class StreamClient extends AbstractClient
 {
-	/** @var array|null */
-	private $sslOptions;
-
-
 	/**
-	 * @param  array  SSL context options {@link http://php.net/manual/en/context.ssl.php}
+	 * @param  ?array $sslOptions  SSL context options {@link http://php.net/manual/en/context.ssl.php}
 	 */
-	public function __construct(array $sslOptions = null)
-	{
-		$this->sslOptions = $sslOptions;
-	}
+	public function __construct(
+		private ?array $sslOptions = null,
+	) {}
 
 
-	protected function setupRequest(Request $request)
+	protected function setupRequest(Request $request): void
 	{
 		parent::setupRequest($request);
 		$request->setHeader('Connection', 'close');
@@ -33,11 +28,9 @@ class StreamClient extends AbstractClient
 
 
 	/**
-	 * @return Response
-	 *
 	 * @throws BadResponseException
 	 */
-	protected function process(Request $request)
+	protected function process(Request $request): Response
 	{
 		$headerStr = [];
 		foreach ($request->getHeaders() as $name => $value) {
@@ -69,20 +62,16 @@ class StreamClient extends AbstractClient
 			$options['ssl'] = $this->sslOptions + $options['ssl'];
 		}
 
-		list($code, $headers, $content) = $this->fileGetContents($request->getUrl(), $options);
+		[$code, $headers, $content] = $this->fileGetContents($request->getUrl(), $options);
 		return new Response($code, $headers, $content);
 	}
 
 
 	/**
 	 * @internal
-	 * @param  string
-	 * @param  array
-	 * @return array
-	 *
 	 * @throws BadResponseException
 	 */
-	protected function fileGetContents($url, array $contextOptions)
+	protected function fileGetContents(string $url, array $contextOptions): array
 	{
 		$context = stream_context_create($contextOptions);
 
@@ -103,16 +92,17 @@ class StreamClient extends AbstractClient
 		}
 		unset($http_response_header[0]);
 
+		$last = null;
 		$headers = [];
 		foreach ($http_response_header as $header) {
 			if (in_array(substr($header, 0, 1), [' ', "\t"], true)) {
 				$headers[$last] .= ' ' . trim($header);  # RFC2616, 2.2
 			} else {
-				list($name, $value) = explode(':', $header, 2) + [null, null];
+				[$name, $value] = explode(':', $header, 2) + [null, null];
 				$headers[$last = trim($name)] = trim($value);
 			}
 		}
 
-		return [$m[1], $headers, $content];
+		return [(int) $m[1], $headers, $content];
 	}
 }

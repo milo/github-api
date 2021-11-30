@@ -16,40 +16,26 @@ abstract class Message
 {
 	use Github\Strict;
 
-	/** @var array[name => value] */
-	private $headers = [];
-
-	/** @var string|null */
-	private $content;
+	private array $headers = [];
 
 
-	/**
-	 * @param  array
-	 * @param  string|null
-	 */
-	public function __construct(array $headers = [], $content = null)
-	{
-		$this->headers = array_change_key_case($headers, CASE_LOWER);
-		$this->content = $content;
+	public function __construct(
+		array $headers = [],
+		private ?string $content = null,
+	) {
+		foreach ($headers as $name => $value) {
+			$this->setHeader($name, $value);
+		}
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function hasHeader($name)
+	public function hasHeader(string $name): bool
 	{
 		return array_key_exists(strtolower($name), $this->headers);
 	}
 
 
-	/**
-	 * @param  string
-	 * @param  mixed
-	 * @return mixed
-	 */
-	public function getHeader($name, $default = null)
+	public function getHeader(string $name, string $default = null): ?string
 	{
 		$name = strtolower($name);
 		return array_key_exists($name, $this->headers)
@@ -58,12 +44,7 @@ abstract class Message
 	}
 
 
-	/**
-	 * @param  string
-	 * @param  string
-	 * @return self
-	 */
-	protected function addHeader($name, $value)
+	protected function addHeader(string $name, ?string $value): static
 	{
 		$name = strtolower($name);
 		if (!array_key_exists($name, $this->headers) && $value !== null) {
@@ -74,12 +55,7 @@ abstract class Message
 	}
 
 
-	/**
-	 * @param  string
-	 * @param  string|null
-	 * @return self
-	 */
-	protected function setHeader($name, $value)
+	protected function setHeader(string $name, ?string $value): static
 	{
 		$name = strtolower($name);
 		if ($value === null) {
@@ -93,18 +69,15 @@ abstract class Message
 
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
-	public function getHeaders()
+	public function getHeaders(): array
 	{
 		return $this->headers;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
-	public function getContent()
+	public function getContent(): ?string
 	{
 		return $this->content;
 	}
