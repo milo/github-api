@@ -141,7 +141,7 @@ class LoginTestCase extends Tester\TestCase
 		}, Milo\Github\OAuth\LoginException::class, 'Bad JSON in response.');
 		$e = Assert::exception(function() use ($e) {
 			throw $e->getPrevious();
-		}, Milo\Github\JsonException::class, 'Syntax error, malformed JSON');
+		}, Milo\Github\JsonException::class, 'Syntax error');
 		Assert::null($e->getPrevious());
 	}
 
