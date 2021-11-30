@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Milo\Github\OAuth;
 
 use Milo\Github;
@@ -54,7 +56,7 @@ class Login extends Github\Sanity
 	public function askPermissions($backUrl, $redirectCb = null)
 	{
 		/** @todo Something more safe? */
-		$state = sha1(uniqid(microtime(true), true));
+		$state = sha1(uniqid((string) microtime(true), true));
 		$params = [
 			'client_id' => $this->conf->clientId,
 			'redirect_uri' => $backUrl,

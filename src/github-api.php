@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__ . '/Github/exceptions.php';
 require __DIR__ . '/Github/Sanity.php';
 require __DIR__ . '/Github/Helpers.php';
