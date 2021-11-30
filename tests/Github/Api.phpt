@@ -131,5 +131,5 @@ test(function() {
 	$client = new MockIClient;
 	$api = new Milo\Github\Api($client);
 
-	Assert::type('Milo\Github\Paginator', $api->paginator(''));
+	Assert::type(Milo\Github\Paginator::class, $api->paginator(''));
 });

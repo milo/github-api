@@ -16,9 +16,9 @@ class TestStrict
 
 Assert::exception(function() {
 	(new TestStrict)->undefined;
-}, 'Milo\Github\LogicException', 'Cannot read an undeclared property TestStrict::$undefined.');
+}, Milo\Github\LogicException::class, 'Cannot read an undeclared property TestStrict::$undefined.');
 
 Assert::exception(function() {
 	$mock = new TestStrict;
 	$mock->undefined = '';
-}, 'Milo\Github\LogicException', 'Cannot write to an undeclared property TestStrict::$undefined.');
+}, Milo\Github\LogicException::class, 'Cannot write to an undeclared property TestStrict::$undefined.');

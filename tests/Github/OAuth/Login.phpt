@@ -60,7 +60,7 @@ class LoginTestCase extends Tester\TestCase
 		Assert::false($this->login->hasToken());
 		Assert::exception(function() {
 			$this->login->getToken();
-		}, 'Milo\Github\LogicException', 'Token has not been obtained yet.');
+		}, Milo\Github\LogicException::class, 'Token has not been obtained yet.');
 	}
 
 
@@ -83,7 +83,7 @@ class LoginTestCase extends Tester\TestCase
 		Assert::same(['a','b','c'], $token->getScopes());
 
 		Assert::true($this->login->hasToken());
-		Assert::type('Milo\Github\OAuth\Token', $this->login->getToken());
+		Assert::type(Milo\Github\OAuth\Token::class, $this->login->getToken());
 
 		Assert::same($this->login, $this->login->dropToken());
 		Assert::false($this->login->hasToken());
@@ -108,7 +108,7 @@ class LoginTestCase extends Tester\TestCase
 
 		Assert::exception(function() {
 			$this->login->obtainToken('', '');
-		}, 'Milo\Github\OAuth\LoginException', 'OAuth security state does not match.');
+		}, Milo\Github\OAuth\LoginException::class, 'OAuth security state does not match.');
 	}
 
 
@@ -121,10 +121,10 @@ class LoginTestCase extends Tester\TestCase
 		};
 		$e = Assert::exception(function() {
 			$this->login->obtainToken('', '*****');
-		}, 'Milo\Github\OAuth\LoginException', 'HTTP request failed.');
+		}, Milo\Github\OAuth\LoginException::class, 'HTTP request failed.');
 		$e = Assert::exception(function() use ($e) {
 			throw $e->getPrevious();
-		}, 'Milo\Github\Http\BadResponseException', 'fail');
+		}, Milo\Github\Http\BadResponseException::class, 'fail');
 		Assert::null($e->getPrevious());
 	}
 
@@ -138,10 +138,10 @@ class LoginTestCase extends Tester\TestCase
 		};
 		$e = Assert::exception(function() {
 			$this->login->obtainToken('', '*****');
-		}, 'Milo\Github\OAuth\LoginException', 'Bad JSON in response.');
+		}, Milo\Github\OAuth\LoginException::class, 'Bad JSON in response.');
 		$e = Assert::exception(function() use ($e) {
 			throw $e->getPrevious();
-		}, 'Milo\Github\JsonException', 'Syntax error, malformed JSON');
+		}, Milo\Github\JsonException::class, 'Syntax error, malformed JSON');
 		Assert::null($e->getPrevious());
 	}
 
@@ -155,7 +155,7 @@ class LoginTestCase extends Tester\TestCase
 		};
 		$e = Assert::exception(function() {
 			$this->login->obtainToken('', '*****');
-		}, 'Milo\Github\OAuth\LoginException', 'fail');
+		}, Milo\Github\OAuth\LoginException::class, 'fail');
 		Assert::null($e->getPrevious());
 	}
 
@@ -168,7 +168,7 @@ class LoginTestCase extends Tester\TestCase
 		};
 		$e = Assert::exception(function() {
 			$this->login->obtainToken('', '*****');
-		}, 'Milo\Github\OAuth\LoginException', 'Unexpected response.');
+		}, Milo\Github\OAuth\LoginException::class, 'Unexpected response.');
 		Assert::null($e->getPrevious());
 	}
 
@@ -179,7 +179,7 @@ class LoginTestCase extends Tester\TestCase
 		$token = new Milo\Github\OAuth\Token('a', 'b', ['c', 'd']);
 		$this->storage->set('auth.token', $token);
 
-		Assert::type('Milo\Github\OAuth\Token', $this->login->getToken());
+		Assert::type(Milo\Github\OAuth\Token::class, $this->login->getToken());
 		Assert::same([
 			'value' => 'a',
 			'type' => 'b',

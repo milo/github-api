@@ -149,7 +149,7 @@ class CachingTestCase extends Tester\TestCase
 		};
 		$response = $this->client->request(new Http\Request('', '', [], '2'));
 		Assert::same('response-1', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same(304, $response->getPrevious()->getCode());
 		Assert::same(2, $this->innerClient->requestCount);
 	}
@@ -178,7 +178,7 @@ class CachingTestCase extends Tester\TestCase
 
 		$response = $this->client->request(new Http\Request('', '', [], '2'));
 		Assert::same('response-1', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same(304, $response->getPrevious()->getCode());
 		Assert::same(2, $this->innerClient->requestCount);
 	}
@@ -207,7 +207,7 @@ class CachingTestCase extends Tester\TestCase
 
 		$response = $this->client->request(new Http\Request('', '', [], '2'));
 		Assert::same('response-1', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same(304, $response->getPrevious()->getCode());
 		Assert::same(2, $this->innerClient->requestCount);
 	}
@@ -226,14 +226,14 @@ class CachingTestCase extends Tester\TestCase
 		# From cache
 		$response = $this->client->request($request);
 		Assert::same('inner-200-same', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same('inner-304-same', $response->getPrevious()->getContent());
 		Assert::same(2, $this->innerClient->requestCount);
 
 		# Again
 		$response = $this->client->request($request);
 		Assert::same('inner-200-same', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same('inner-304-same', $response->getPrevious()->getContent());
 		Assert::same(3, $this->innerClient->requestCount);
 	}
@@ -250,13 +250,13 @@ class CachingTestCase extends Tester\TestCase
 
 		$response = $this->client->request($request);
 		Assert::same('inner-200-disabled', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same('inner-304-disabled', $response->getPrevious()->getContent());
 		Assert::same(2, $this->innerClient->requestCount);
 
 		$response = $this->client->request($request);
 		Assert::same('inner-200-disabled', $response->getContent());
-		Assert::type('Milo\Github\Http\Response', $response->getPrevious());
+		Assert::type(Milo\Github\Http\Response::class, $response->getPrevious());
 		Assert::same('inner-304-disabled', $response->getPrevious()->getContent());
 		Assert::same(3, $this->innerClient->requestCount);
 	}

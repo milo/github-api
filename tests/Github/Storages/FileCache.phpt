@@ -11,7 +11,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 $e = Assert::exception(function() {
 	new Milo\Github\Storages\FileCache(__DIR__ . DIRECTORY_SEPARATOR . 'non-exists');
-}, 'Milo\Github\Storages\MissingDirectoryException', "Directory '%a%non-exists' is missing.");
+}, Milo\Github\Storages\MissingDirectoryException::class, "Directory '%a%non-exists' is missing.");
 
 Assert::null($e->getPrevious());
 

@@ -27,4 +27,4 @@ Assert::same($previous, $response->getPrevious());
 
 Assert::exception(function() use ($response, $previous) {
 	$response->setPrevious($previous);
-}, 'Milo\Github\LogicException', 'Previous response is already set.');
+}, Milo\Github\LogicException::class, 'Previous response is already set.');

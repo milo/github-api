@@ -40,11 +40,11 @@ test(function() {
 
 	Assert::exception(function() use ($api) {
 		$api->expandColonParameters(':a', ['A' => 'a']);
-	}, 'Milo\Github\MissingParameterException', "Missing parameter 'a' for URL path ':a'.");
+	}, Milo\Github\MissingParameterException::class, "Missing parameter 'a' for URL path ':a'.");
 
 	Assert::exception(function() use ($api) {
 		$api->expandColonParameters(':a:b', ['a' => 'A', 'b' => 'B']);
-	}, 'Milo\Github\MissingParameterException', "Missing parameter 'a:b' for URL path ':a:b'.");
+	}, Milo\Github\MissingParameterException::class, "Missing parameter 'a:b' for URL path ':a:b'.");
 });
 
 
