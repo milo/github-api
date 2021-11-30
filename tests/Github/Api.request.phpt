@@ -21,13 +21,13 @@ class MockIClient implements Milo\Github\Http\IClient
 	}
 
 
-	public function onRequest(?callable $cb): static
+	public function onRequest(?callable $callback): static
 	{
 		return $this;
 	}
 
 
-	public function onResponse(?callable $cb): static
+	public function onResponse(?callable $callback): static
 	{
 		return $this;
 	}

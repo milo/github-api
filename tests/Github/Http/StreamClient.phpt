@@ -10,7 +10,7 @@ declare(strict_types=1);
 require __DIR__ . '/../../bootstrap.php';
 
 
-class TestClient extends Milo\Github\Http\StreamClient
+class TestStreamClient extends Milo\Github\Http\StreamClient
 {
 	/** @var callable */
 	public $onFileGetContents;
@@ -21,13 +21,13 @@ class TestClient extends Milo\Github\Http\StreamClient
 	}
 
 
-	public function onRequest(?callable $cb): static
+	public function onRequest(?callable $callback): static
 	{
 		return $this;
 	}
 
 
-	public function onResponse(?callable $cb): static
+	public function onResponse(?callable $callback): static
 	{
 		return $this;
 	}
@@ -36,7 +36,7 @@ class TestClient extends Milo\Github\Http\StreamClient
 
 # Common
 test(function() {
-	$client = new TestClient;
+	$client = new TestStreamClient;
 	$client->onFileGetContents = function($url, array $contextOptions) {
 		Assert::same('http://example.com', $url);
 		Assert::same([
@@ -68,7 +68,7 @@ test(function() {
 
 # SSL options
 test(function() {
-	$client = new TestClient(['option' => 'value']);
+	$client = new TestStreamClient(['option' => 'value']);
 	$client->onFileGetContents = function($url, array $contextOptions) {
 		Assert::type('array', $contextOptions['ssl']);
 		Assert::same([

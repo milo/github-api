@@ -22,13 +22,13 @@ class MockClient implements Milo\Github\Http\IClient
 	}
 
 
-	public function onRequest(?callable $cb): static
+	public function onRequest(?callable $callback): static
 	{
 		return $this;
 	}
 
 
-	public function onResponse(?callable $cb): static
+	public function onResponse(?callable $callback): static
 	{
 		return $this;
 	}
@@ -38,17 +38,11 @@ class MockClient implements Milo\Github\Http\IClient
 
 class LoginTestCase extends Tester\TestCase
 {
-	/** @var Milo\Github\OAuth\Configuration */
-	private $config;
+	private Milo\Github\Storages\SessionStorage $storage;
 
-	/** @var Milo\Github\Storages\SessionStorage */
-	private $storage;
+	private MockClient $client;
 
-	/** @var MockClient */
-	private $client;
-
-	/** @var Milo\Github\OAuth\Login */
-	private $login;
+	private Milo\Github\OAuth\Login $login;
 
 
 	public function setup()

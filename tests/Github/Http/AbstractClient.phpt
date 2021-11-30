@@ -10,7 +10,7 @@ declare(strict_types=1);
 require __DIR__ . '/../../bootstrap.php';
 
 
-class TestClient extends Milo\Github\Http\AbstractClient
+final class TestAbstractClient extends Milo\Github\Http\AbstractClient
 {
 	/** @var callable */
 	public $onProcess;
@@ -32,7 +32,7 @@ test(function() {
 		new Milo\Github\Http\Response(200, ['Location' => ''], ''),
 	];
 
-	$client = new TestClient;
+	$client = new TestAbstractClient;
 	$client->onProcess = function (Milo\Github\Http\Request $request) use (&$responses) {
 		return array_shift($responses);
 	};
@@ -56,7 +56,7 @@ test(function() {
 
 # onRequest(), onResponse()
 test(function() {
-	$client = new TestClient;
+	$client = new TestAbstractClient;
 	$client->onProcess = function() { return new Milo\Github\Http\Response(200, [], '{response}'); };
 
 	$onRequest = null;
@@ -78,7 +78,7 @@ test(function() {
 
 # Additional headers
 test(function(){
-	$client = new TestClient;
+	$client = new TestAbstractClient;
 	$client->onProcess = function(Milo\Github\Http\Request $request) {
 		Assert::same([
 			'expect' => '',

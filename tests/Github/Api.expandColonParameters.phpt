@@ -9,7 +9,7 @@ declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
 
 
-class TestApi extends Milo\Github\Api
+class TestExpandColonApi extends Milo\Github\Api
 {
 	public function expandColonParameters(string $url, array $parameters, array $defaultParameters = []): string
 	{
@@ -20,7 +20,7 @@ class TestApi extends Milo\Github\Api
 
 # URL parameters like :name
 test(function() {
-	$api = new TestApi;
+	$api = new TestExpandColonApi;
 
 	$urls = [
 		'' => '?a=A&b=B',
@@ -50,7 +50,7 @@ test(function() {
 
 # Parameters escaping
 test(function() {
-	$api = new TestApi;
+	$api = new TestExpandColonApi;
 
 	Assert::same('/with%20space', $api->expandColonParameters('/:name', ['name' => 'with space']));
 });
@@ -58,7 +58,7 @@ test(function() {
 
 # Default parameters expanding
 test(function() {
-	$api = new TestApi;
+	$api = new TestExpandColonApi;
 
 	Assert::same('/default', $api->expandColonParameters('/:var', [], ['var' => 'default']));
 	Assert::same('/set', $api->expandColonParameters('/:var', ['var' => 'set'], ['var' => 'default']));

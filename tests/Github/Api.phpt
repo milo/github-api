@@ -9,7 +9,7 @@ declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
 
 
-class MockIClient implements Milo\Github\Http\IClient
+class LogicExceptionMockClient implements Milo\Github\Http\IClient
 {
 	public function request(Milo\Github\Http\Request $request): Milo\Github\Http\Response
 	{
@@ -17,13 +17,13 @@ class MockIClient implements Milo\Github\Http\IClient
 	}
 
 
-	public function onRequest(?callable $cb): static
+	public function onRequest(?callable $callback): static
 	{
 		return $this;
 	}
 
 
-	public function onResponse(?callable $cb): static
+	public function onResponse(?callable $callback): static
 	{
 		return $this;
 	}
@@ -32,7 +32,7 @@ class MockIClient implements Milo\Github\Http\IClient
 
 # Basics
 test(function() {
-	$client = new MockIClient;
+	$client = new LogicExceptionMockClient;
 	$api = new Milo\Github\Api($client);
 
 	Assert::same($client, $api->getClient());
@@ -58,7 +58,7 @@ test(function() {
 
 # createRequest()
 test(function() {
-	$client = new MockIClient;
+	$client = new LogicExceptionMockClient;
 	$api = new Milo\Github\Api($client);
 
 	# All slashes in URL
@@ -87,7 +87,7 @@ test(function() {
 
 # Default parameters
 test(function() {
-	$client = new MockIClient;
+	$client = new LogicExceptionMockClient;
 	$api = new Milo\Github\Api($client);
 	$api->setUrl('url://test');
 
@@ -110,7 +110,7 @@ test(function() {
 
 # Api called with absolute URL
 test(function() {
-	$client = new MockIClient;
+	$client = new LogicExceptionMockClient;
 	$api = new Milo\Github\Api($client);
 	$api->setUrl('url://test');
 
@@ -137,7 +137,7 @@ test(function() {
 
 # Paginator
 test(function() {
-	$client = new MockIClient;
+	$client = new LogicExceptionMockClient;
 	$api = new Milo\Github\Api($client);
 
 	Assert::type(Milo\Github\Paginator::class, $api->paginator(''));

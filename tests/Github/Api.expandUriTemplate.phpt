@@ -9,7 +9,7 @@ declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
 
 
-class TestApi extends Milo\Github\Api
+class TestExpandUriTemplateApi extends Milo\Github\Api
 {
 	public function expandUriTemplate(string $url, array $parameters, array $defaultParameters = []): string
 	{
@@ -17,7 +17,7 @@ class TestApi extends Milo\Github\Api
 	}
 }
 
-$api = new TestApi;
+$api = new TestExpandUriTemplateApi;
 
 # NULL (aka undefined)
 $cases = [

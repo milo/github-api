@@ -14,7 +14,7 @@ require __DIR__ . '/../../bootstrap.php';
 use Milo\Github\Http;
 
 
-class MockClient implements Http\IClient
+class MockClientCounter implements Http\IClient
 {
 	/** @var callable */
 	public $onRequest;
@@ -29,15 +29,15 @@ class MockClient implements Http\IClient
 		return $response;
 	}
 
-	public function onRequest(?callable $foo): static
+	public function onRequest(?callable $callback): static
 	{
-		trigger_error('Inner onRequest called: ' . var_export($foo, true), E_USER_NOTICE);
+		trigger_error('Inner onRequest called: ' . var_export($callback, true), E_USER_NOTICE);
 		return $this;
 	}
 
-	public function onResponse(?callable $foo): static
+	public function onResponse(?callable $callback): static
 	{
-		trigger_error('Inner onResponse called: ' . var_export($foo, true), E_USER_NOTICE);
+		trigger_error('Inner onResponse called: ' . var_export($callback, true), E_USER_NOTICE);
 		return $this;
 	}
 }
@@ -63,13 +63,13 @@ class CachingTestCase extends Tester\TestCase
 {
 	private Http\CachedClient $client;
 
-	private MockClient $innerClient;
+	private MockClientCounter $innerClient;
 
 
 	public function setup()
 	{
 		$cache = new MockCache;
-		$this->innerClient = new MockClient;
+		$this->innerClient = new MockClientCounter;
 		$this->client = new Http\CachedClient($cache, $this->innerClient);
 
 		$this->innerClient->onRequest = function (Http\Request $request) {

@@ -16,6 +16,6 @@ date_default_timezone_set('UTC');
 class Assert extends Tester\Assert
 {}
 
-function test(\closure $cb) {
+function test(\Closure $cb) {
 	$cb();
 }

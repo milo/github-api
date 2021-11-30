@@ -16,7 +16,7 @@ $e = Assert::exception(function() {
 Assert::null($e->getPrevious());
 
 
-define('TEMP_DIR', __DIR__ . '/temp.FileCache');
+const TEMP_DIR = __DIR__ . '/temp.FileCache';
 @mkdir(TEMP_DIR);  # @ = directory may exist
 Tester\Helpers::purge(TEMP_DIR);
 
