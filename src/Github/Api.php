@@ -12,8 +12,10 @@ namespace Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Api extends Sanity
+class Api
 {
+	use Strict;
+
 	/** @var string */
 	private $url = 'https://api.github.com';
 

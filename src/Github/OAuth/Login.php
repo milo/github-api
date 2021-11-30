@@ -14,8 +14,10 @@ use Milo\Github\Http;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Login extends Github\Sanity
+class Login
 {
+	use Github\Strict;
+
 	/** @var string */
 	private $authUrl = 'https://github.com/login/oauth/authorize';
 

@@ -12,8 +12,10 @@ namespace Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Paginator extends Sanity implements \Iterator
+class Paginator implements \Iterator
 {
+	use Strict;
+
 	/** @var Api */
 	private $api;
 

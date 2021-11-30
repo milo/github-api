@@ -13,8 +13,10 @@ use Milo\Github\Storages;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class CachedClient extends Github\Sanity implements IClient
+class CachedClient implements IClient
 {
+	use Github\Strict;
+
 	/** @var Storages\ICache|null */
 	private $cache;
 

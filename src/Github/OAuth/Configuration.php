@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Configuration extends Github\Sanity
+class Configuration
 {
+	use Github\Strict;
+
 	/** @var string */
 	public $clientId;
 

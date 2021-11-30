@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-abstract class AbstractClient extends Github\Sanity implements IClient
+abstract class AbstractClient implements IClient
 {
+	use Github\Strict;
+
 	/** @var int[]  will follow Location header on these response codes */
 	public $redirectCodes = [
 		Response::S301_MOVED_PERMANENTLY,

@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class Token extends Github\Sanity
+class Token
 {
+	use Github\Strict;
+
 	/** @var string */
 	private $value;
 

@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class FileCache extends Github\Sanity implements ICache
+class FileCache implements ICache
 {
+	use Github\Strict;
+
 	/** @var string */
 	private $dir;
 

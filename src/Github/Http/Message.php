@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-abstract class Message extends Github\Sanity
+abstract class Message
 {
+	use Github\Strict;
+
 	/** @var array[name => value] */
 	private $headers = [];
 

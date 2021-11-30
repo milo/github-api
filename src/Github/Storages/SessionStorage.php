@@ -12,8 +12,10 @@ use Milo\Github;
  *
  * @author  Miloslav Hůla (https://github.com/milo)
  */
-class SessionStorage extends Github\Sanity implements ISessionStorage
+class SessionStorage implements ISessionStorage
 {
+	use Github\Strict;
+
 	const SESSION_KEY = 'milo.github-api';
 
 	/** @var string */
