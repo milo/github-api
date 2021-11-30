@@ -1,7 +1,7 @@
 {
 	"name": "milo/github-api",
 	"type": "library",
-	"description": "Github API easy access",
+	"description": "GitHub API easy access",
 	"license": ["MIT"],
 	"authors": [
 		{
@@ -11,10 +11,10 @@
 		}
 	],
 	"require": {
-		"php": ">=5.4.0"
+		"php": ">=8.0 <8.2"
 	},
 	"require-dev": {
-		"nette/tester": "^1.7 || ^2.0"
+		"nette/tester": "^2.4"
 	},
 	"suggest": {
 		"ext-curl": "Allows you to use Http\\CurlClient"
