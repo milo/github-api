@@ -1,24 +1,30 @@
-[GitHub API](https://developer.github.com/v3/) easy access library. Works with cURL, stream or any of your HTTP client.
+[GitHub API](https://developer.github.com/v3/) Easy Access library
+==================================================================
+
+Works with cURL, stream or any of your HTTP client.
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/milo/github-api.svg)](https://packagist.org/packages/milo/github-api)
 [![Tests](https://github.com/milo/github-api/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/milo/github-api/actions)
 
 
-# Installation
+Installation
+------------
 Download [release](https://github.com/milo/github-api/releases), decompress and include `github-api.php` manually, or use [Composer](https://getcomposer.org/):
+
 ```
 composer require milo/github-api
 ```
 
 
-# Documentation
+Documentation
+-------------
 Everything at [wiki pages](https://github.com/milo/github-api/wiki), including the [short classes description](https://github.com/milo/github-api/wiki/Classes-description).
-Whole API documentation is hosted on [Codedoc](https://codedoc.pub/milo/github-api/master/index.html).
 
 
 Quick Start
-===========
-List all emojis used on Github.
+-----------
+List all emojis used on GitHub.
+
 ```php
 use Milo\Github;
 
@@ -42,7 +48,8 @@ stdClass Object (
 ```
 
 
-# License
+License
+-------
 The MIT License (MIT)
 
 Copyright (c) 2014 Miloslav Hůla
