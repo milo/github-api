@@ -90,7 +90,7 @@ class CachingTestCase extends Tester\TestCase
 			Assert::same($this->client, $this->client->onRequest($cb));
 			Assert::same($this->client, $this->client->onResponse($cb));
 		}, [
-			[E_USER_NOTICE, "Inner onRequest called: Closure::%A%"],
+			[E_USER_NOTICE, 'Inner onRequest called: %a?%Closure::%A%'],
 			[E_USER_NOTICE, 'Inner onResponse called: NULL'],
 		]);
 
