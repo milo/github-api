@@ -27,13 +27,13 @@ class Api
 	private ?OAuth\Token $token = null;
 
 
-	public function __construct(Http\IClient $client = null)
+	public function __construct(?Http\IClient $client = null)
 	{
 		$this->client = $client ?: Helpers::createDefaultClient();
 	}
 
 
-	public function setToken(OAuth\Token $token = null): static
+	public function setToken(?OAuth\Token $token = null): static
 	{
 		$this->token = $token;
 		return $this;
@@ -46,7 +46,7 @@ class Api
 	}
 
 
-	public function setDefaultParameters(array $defaults = null): static
+	public function setDefaultParameters(?array $defaults = null): static
 	{
 		$this->defaultParameters = $defaults ?: [];
 		return $this;
@@ -189,7 +189,7 @@ class Api
 	 * @throws MissingParameterException  when substitution is used in URL but parameter is missing
 	 * @throws JsonException  when encoding to JSON fails
 	 */
-	public function createRequest(string $method, string $urlPath, array $parameters = [], array $headers = [], string|array|object $content = null): Http\Request
+	public function createRequest(string $method, string $urlPath, array $parameters = [], array $headers = [], string|array|object|null $content = null): Http\Request
 	{
 		if (stripos($urlPath, $this->url) === 0) {  # Allows non-HTTPS URLs
 			$baseUrl = $this->url;
@@ -225,7 +225,7 @@ class Api
 	 *
 	 * @throws ApiException
 	 */
-	public function decode(Http\Response $response, array $okCodes = null): mixed
+	public function decode(Http\Response $response, ?array $okCodes = null): mixed
 	{
 		$content = $response->getContent();
 		if (preg_match('~application/json~i', $response->getHeader('Content-Type', ''))) {
@@ -460,7 +460,7 @@ class Api
 	}
 
 
-	private function escape(array $flags, string|int|false $value, int $maxLength = null): string
+	private function escape(array $flags, string|int|false $value, ?int $maxLength = null): string
 	{
 		$value = (string) $value;
 

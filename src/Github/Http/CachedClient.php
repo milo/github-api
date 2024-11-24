@@ -28,7 +28,7 @@ class CachedClient implements IClient
 	 */
 	public function __construct(
 		private Storages\ICache $cache,
-		IClient $client = null,
+		?IClient $client = null,
 		private bool $forbidRecheck = false,
 	) {
 		$this->client = $client ?: Github\Helpers::createDefaultClient();

@@ -49,7 +49,7 @@ namespace Milo\Github {
 		private ?Http\Response $response;
 
 
-		public function __construct(string $message = '', int $code = 0, \Exception $previous = null, Http\Response $response = null)
+		public function __construct(string $message = '', int $code = 0, ?\Exception $previous = null, ?Http\Response $response = null)
 		{
 			parent::__construct($message, $code, $previous);
 			$this->response = clone $response;

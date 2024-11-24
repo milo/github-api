@@ -29,8 +29,8 @@ class Login
 
 	public function __construct(
 		private Configuration $conf,
-		Storages\ISessionStorage $storage = null,
-		Http\IClient $client = null
+		?Storages\ISessionStorage $storage = null,
+		?Http\IClient $client = null
 	) {
 		$this->storage = $storage ?: new Storages\SessionStorage;
 		$this->client = $client ?: Github\Helpers::createDefaultClient();
@@ -47,7 +47,7 @@ class Login
 	 * @param  string $backUrl  URL to redirect back from GitHub when user approves the permissions request
 	 * @param  ?callable $redirectCb  makes HTTP redirect to GitHub
 	 */
-	public function askPermissions(string $backUrl, callable $redirectCb = null): void
+	public function askPermissions(string $backUrl, ?callable $redirectCb = null): void
 	{
 		/** @todo Something more safe? */
 		$state = sha1(uniqid((string) microtime(true), true));

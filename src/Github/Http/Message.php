@@ -35,7 +35,7 @@ abstract class Message
 	}
 
 
-	public function getHeader(string $name, string $default = null): ?string
+	public function getHeader(string $name, ?string $default = null): ?string
 	{
 		$name = strtolower($name);
 		return array_key_exists($name, $this->headers)

@@ -26,7 +26,7 @@ class Request extends Message
 		private string $method,
 		private string $url,
 		array $headers = [],
-		string $content = null
+		?string $content = null
 	) {
 		parent::__construct($headers, $content);
 	}
